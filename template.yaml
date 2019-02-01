@@ -5,17 +5,48 @@ Description: >
 
     Sample SAM Template for sam-app
 
+
+Parameters:
+    Domains:
+        Type: String
+        Description: Comma separated list of domains to update the certificates
+    Email:
+        Type: String
+        Description: Email address
+    BucketName:
+        Type: String
+        Description: S3 bucket name for saving the certificates
+    Prefix:
+        Type: String
+        Description: Prefix of objects on S3 bucket
+        Default: ""
+    IsProduction:
+        Type: String
+        AllowedValues: ["true", "false"]
+        Default: "true"
+        Description: prodcuton
+    AcmeServer:
+        Type: String
+        Default: https://acme-v02.api.letsencrypt.org/directory
+        Description: url for acme server
+
+
 Resources:
 
     AcmeCertUpdater:
-        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Type: AWS::Serverless::Function
         Properties:
             CodeUri: updater/
             Handler: app.lambda_handler
             Runtime: python3.7
-            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+            Environment:
                 Variables:
-                    PARAM1: VALUE
+                    UPDATER_DOMAINS: !Ref Domains
+                    UPDATER_EMAIL: !Ref Email
+                    UPDATER_BUCKET_NAME: !Ref BucketName
+                    UPDATER_PREFIX: !Ref Prefix
+                    UPDATER_PRODUCTION: !Ref IsProduction
+                    UPDATER_ACME_SERVER: !Ref AcmeServer
             Timeout: 900
             Events:
                 Update:
