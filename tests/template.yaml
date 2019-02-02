@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: test environment for acme-cert-updater
+
+Resources:
+
+  TestUser:
+    Type: AWS::IAM::User
+    Properties:
+      Policies:
+        - PolicyName: CloudFormation
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:Validate"
+                Resource:
+                  - "*"
+
+  TestUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    DependsOn: TestUser
+    Properties:
+      Status: Active
+      UserName: !Ref TestUser
+
+Outputs:
+  AccessKey:
+    Value: !Ref TestUserAccessKey
+  SecretAccessKey:
+    Value: !GetAtt TestUserAccessKey.SecretAccessKey
