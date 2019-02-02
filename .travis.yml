@@ -4,7 +4,7 @@ python:
 
 install:
   - pip install -r updater/requirements.txt
-  - pip install aws-cli aws-sam-cli --upgrade
+  - pip install awscli aws-sam-cli --upgrade
 
 script:
   - make test
