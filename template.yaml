@@ -20,11 +20,11 @@ Parameters:
         Type: String
         Description: Prefix of objects on S3 bucket
         Default: ""
-    IsProduction:
+    Environment:
         Type: String
-        AllowedValues: ["true", "false"]
-        Default: "true"
-        Description: prodcuton
+        AllowedValues: ["production", "staging"]
+        Default: "production"
+        Description: execution environment
     AcmeServer:
         Type: String
         Default: https://acme-v02.api.letsencrypt.org/directory
@@ -45,7 +45,7 @@ Resources:
                     UPDATER_EMAIL: !Ref Email
                     UPDATER_BUCKET_NAME: !Ref BucketName
                     UPDATER_PREFIX: !Ref Prefix
-                    UPDATER_PRODUCTION: !Ref IsProduction
+                    UPDATER_ENVIRONMENT: !Ref Environment
                     UPDATER_ACME_SERVER: !Ref AcmeServer
             Timeout: 900
             Events:
