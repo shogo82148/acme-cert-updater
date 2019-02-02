@@ -7,13 +7,18 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       Policies:
-        - PolicyName: CloudFormation
+        - PolicyName: sam-validation
           PolicyDocument:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:
                   - "cloudformation:Validate"
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - iam:ListPolicies
                 Resource:
                   - "*"
 
