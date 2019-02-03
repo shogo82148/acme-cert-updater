@@ -34,9 +34,9 @@ class Config(object):
 
 def test_certonly():
     cfg = Config()
-    assert app.needs_init(cfg), True
+    assert app.needs_init(cfg) == True
     app.certonly(cfg)
-    assert app.needs_init(cfg), False
+    assert app.needs_init(cfg) == False
     app.renew(cfg)
 
     s3 = boto3.resource('s3')
