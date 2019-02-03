@@ -1,5 +1,6 @@
 import pytest
 import secrets
+import boto3
 
 from updater import app
 
@@ -35,3 +36,8 @@ def test_certonly():
     cfg = Config()
     app.certonly(cfg)
     app.renew(cfg)
+
+    s3 = boto3.resource('s3')
+    s3.Bucket(cfg.bucket_name).objects.filter(
+        Prefix = cfg.prefix + '/',
+    ).delete()

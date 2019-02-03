@@ -62,14 +62,31 @@ def certonly(config):
 def renew(config):
     with tempfile.TemporaryDirectory() as tmp:
         load_cert(config, tmp)
+
+        flag = pathlib.Path(tmp, 'flag.txt')
+        hook = pathlib.Path(tmp, 'config-dir', 'renewal-hooks', 'post', 'post.sh')
+        hook.parent.mkdir(parents = True, exist_ok = True)
+        hook.write_text("#!/usr/bin/env bash\n\ntouch '" + str(flag) + "'")
+        hook.chmod(0o755)
+
         input_array = [
             'renew',
+            '--noninteractive',
+            '--agree-tos',
+            '--email', config.email,
+            '--dns-route53',
             '--config-dir', os.path.join(tmp, 'config-dir/'),
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
         ]
+        if config.environment != 'production':
+            # force renewal for testing
+            input_array.append('--force-renewal')
+
         certbot.main.main(input_array)
-        # save_cert(config, tmp)
+
+        if flag.exists():
+            save_cert(config, tmp)
 
 s3 = boto3.resource('s3')
 def save_cert(config, tmp):
