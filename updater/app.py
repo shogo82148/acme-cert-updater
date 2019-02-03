@@ -1,4 +1,6 @@
 import os
+import boto3
+import os.path
 import logging
 import tempfile
 import certbot.main
@@ -41,10 +43,9 @@ def certonly(config):
             '--email', config.email,
             '--dns-route53',
             '-d', config.domains,
-            # TODO: use tmp
-            '--config-dir', '/Users/shogoichinose/src/github.com/shogo82148/acme-cert-updater/.tmp/config-dir/',
-            '--work-dir', '/Users/shogoichinose/src/github.com/shogo82148/acme-cert-updater/.tmp/work-dir/',
-            '--logs-dir', '/Users/shogoichinose/src/github.com/shogo82148/acme-cert-updater/.tmp/logs-dir/',
+            '--config-dir', os.path.join(tmp, 'config-dir/'),
+            '--work-dir', os.path.join(tmp, 'word-dir/'),
+            '--logs-dir', os.path.join(tmp, 'logs-dir/'),
         ]
         if config.environment == 'production':
             input_array.append('--server')
@@ -52,10 +53,20 @@ def certonly(config):
         else:
             input_array.append('--staging')
         certbot.main.main(input_array)
+        save_cert(config, tmp)
 
+s3 = boto3.resource('s3')
 def save_cert(config, tmp):
-    # TODO: upload to S3
-    pass
+    """upload the certificate files to Amazon S3"""
+    bucket = s3.Bucket(config.bucket_name)
+    domains = config.domains.split(',')
+    for domain in domains:
+        # s3key = domain.strip().replace('*.', 'asterisk.', 1)
+        live = os.path.join(tmp, 'config-dir/live/', domain.strip().replace('*.', '', 1))
+        bucket.upload_file(os.path.join(live, 'cert.pem'), 'cert.pem')
+        bucket.upload_file(os.path.join(live, 'chain.pem'), 'chain.pem')
+        bucket.upload_file(os.path.join(live, 'fullchain.pem'), 'fullchain.pem')
+        bucket.upload_file(os.path.join(live, 'privkey.pem'), 'privkey.pem')
 
 def lambda_handler(event, context):
     return {}

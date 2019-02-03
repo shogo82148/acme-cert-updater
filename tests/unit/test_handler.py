@@ -1,8 +1,12 @@
 import pytest
+import secrets
 
 from updater import app
 
-class TestConfig(object):
+class Config(object):
+    def __init__(self):
+        self._prefix = secrets.token_hex(16)
+
     @property
     def domains(self):
         return "*.shogo82148.com"
@@ -13,11 +17,11 @@ class TestConfig(object):
     
     @property
     def bucket_name(self) -> str:
-        return ""
+        return "shogo82148-acme-cert-updater-test"
 
     @property
     def prefix(self) -> str:
-        return ""
+        return self._prefix
 
     @property
     def environment(self) -> str:
@@ -28,4 +32,4 @@ class TestConfig(object):
         return 'https://acme-v02.api.letsencrypt.org/directory'
 
 def test_certonly():
-    app.certonly(TestConfig())
+    app.certonly(Config())
