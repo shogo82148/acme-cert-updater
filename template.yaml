@@ -5,6 +5,18 @@ Description: >
 
     Sample SAM Template for sam-app
 
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: acme-cert-updater
+    Description: update the certificate using ACME and Route 53
+    Author: Shogo Ichinose
+    SpdxLicenseId: MIT
+    LicenseUrl: LICENSE
+    ReadmeUrl: README.md
+    Labels: ['acme', 'letsencrypt']
+    HomePageUrl: https://github.com/shogo82148/acme-cert-updater
+    SemanticVersion: 0.0.1
+    SourceCodeUrl: https://github.com/shogo82148/acme-cert-updater
 
 Parameters:
   Domains:

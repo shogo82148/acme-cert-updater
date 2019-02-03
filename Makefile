@@ -13,3 +13,16 @@ test: ## run tests
 
 validate: ## validate SAM template
 	sam validate
+
+release: ## Release the application to AWS Serverless Application Repository
+	pipenv lock -r > updater/requirements.txt
+	sam build --use-container
+	cp README.md .aws-sam/build/
+	cp LICENSE .aws-sam/build/
+	sam package \
+		--template-file .aws-sam/build/template.yaml \
+		--output-template-file .aws-sam/build/packaged.yaml \
+		--s3-bucket shogo82148-sam
+	sam publish \
+		--template .aws-sam/build/packaged.yaml \
+		--region us-east-1
