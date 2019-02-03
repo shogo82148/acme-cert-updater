@@ -1,6 +1,8 @@
 import os
 import boto3
 import os.path
+import pathlib
+import json
 import logging
 import tempfile
 import certbot.main
@@ -61,12 +63,26 @@ def save_cert(config, tmp):
     bucket = s3.Bucket(config.bucket_name)
     domains = config.domains.split(',')
     for domain in domains:
-        # s3key = domain.strip().replace('*.', 'asterisk.', 1)
-        live = os.path.join(tmp, 'config-dir/live/', domain.strip().replace('*.', '', 1))
+        domain = domain.strip().replace('*.', '', 1)
+        live = os.path.join(tmp, 'config-dir/live/', domain)
         bucket.upload_file(os.path.join(live, 'cert.pem'), 'cert.pem')
         bucket.upload_file(os.path.join(live, 'chain.pem'), 'chain.pem')
         bucket.upload_file(os.path.join(live, 'fullchain.pem'), 'fullchain.pem')
         bucket.upload_file(os.path.join(live, 'privkey.pem'), 'privkey.pem')
+
+        config = {
+            "accounts": {},
+        }
+        accounts_path = pathlib.Path(os.path.join(tmp, 'config-dir/accounts/'))
+        for root, _, files in os.walk(str(accounts_path)):
+            for name in files:
+                path = pathlib.Path(root, name)
+                config["accounts"][str(path.relative_to(accounts_path))] = path.read_text()
+        bucket.put_object(
+            Body = json.dumps(config),
+            Key = domain + '.json',
+            ContentType = 'application/json',
+        )
 
 def lambda_handler(event, context):
     return {}
