@@ -65,6 +65,8 @@ def renew(config):
         input_array = [
             'renew',
             '--config-dir', os.path.join(tmp, 'config-dir/'),
+            '--work-dir', os.path.join(tmp, 'word-dir/'),
+            '--logs-dir', os.path.join(tmp, 'logs-dir/'),
         ]
         certbot.main.main(input_array)
         # save_cert(config, tmp)
