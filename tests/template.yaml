@@ -21,6 +21,7 @@ Resources:
                   - "s3:*"
                 Resource:
                   - !GetAtt TestBucket.Arn
+                  - !Sub "${TestBucket.Arn}/*"
         - PolicyName: route53
           PolicyDocument:
             Version: 2012-10-17
