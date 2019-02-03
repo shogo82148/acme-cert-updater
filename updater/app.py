@@ -74,10 +74,19 @@ def save_cert(config, tmp):
         bucket.upload_file(os.path.join(live, 'privkey.pem'), build_key(config.prefix, domain, now, 'privkey.pem'))
 
         certconfig = {
-            "accounts": get_files(tmp, 'config-dir/accounts'),
-            "csr": get_files(tmp, 'config-dir/csr'),
-            "keys": get_files(tmp, 'config-dir/keys'),
-            "renewal": get_renewal_config(tmp, domain),
+            'timestamp': now,
+            'config': {
+                'account': get_files(tmp, 'config-dir/accounts'),
+                'csr': get_files(tmp, 'config-dir/csr'),
+                'keys': get_files(tmp, 'config-dir/keys'),
+                'renewal': get_renewal_config(tmp, domain),
+            },
+            'cert': {
+                'cert': build_key(config.prefix, domain, now, 'cert.pem'),
+                'chain': build_key(config.prefix, domain, now, 'chain.pem'),
+                'fullchain': build_key(config.prefix, domain, now, 'fullchain.pem'),
+                'privkey': build_key(config.prefix, domain, now, 'privkey.pem'),
+            },
         }
         bucket.put_object(
             Body = json.dumps(certconfig),
