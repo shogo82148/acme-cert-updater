@@ -11,6 +11,7 @@ aws-sam-cli = "*"
 
 [packages]
 boto3 = "*"
+configobj = "*"
 certbot = "*"
 certbot-dns-route53 = "*"
 

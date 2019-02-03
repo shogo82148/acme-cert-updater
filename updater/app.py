@@ -6,6 +6,7 @@ import json
 import logging
 import tempfile
 import certbot.main
+import configobj
 from datetime import datetime
 
 # set up the logger
@@ -61,6 +62,7 @@ def certonly(config):
 s3 = boto3.resource('s3')
 def save_cert(config, tmp):
     """upload the certificate files to Amazon S3"""
+    tmppath = pathlib.Path(tmp)
     bucket = s3.Bucket(config.bucket_name)
     domains = config.domains.split(',')
     now = datetime.utcnow().isoformat()
@@ -76,7 +78,9 @@ def save_cert(config, tmp):
             "accounts": {},
             "csr": {},
             "keys": {},
+            "renewal": {},
         }
+
         accounts_path = pathlib.Path(os.path.join(tmp, 'config-dir/accounts/'))
         for root, _, files in os.walk(str(accounts_path)):
             for name in files:
@@ -92,6 +96,15 @@ def save_cert(config, tmp):
             for name in files:
                 path = pathlib.Path(root, name)
                 certconfig["accounts"][str(path.relative_to(keys_path))] = path.read_text()
+
+        renewal_config = configobj.ConfigObj(os.path.join(tmp, 'config-dir', 'renewal', domain + '.conf'))
+        for key in ['archive_dir', 'cert', 'privkey', 'chain', 'fullchain']:
+            certconfig[key] = str(pathlib.Path(certconfig[key]).relative_to(tmppath))
+        for key in ['config_dir', 'work_dir', 'logs_dir']:
+            certconfig['renewalparams'][key] = str(pathlib.Path(certconfig['renewalparams'][key]).relative_to(tmppath))
+        for key, value in renewal_config.items():
+            certconfig['renewal'][key] = value
+
         bucket.put_object(
             Body = json.dumps(certconfig),
             Key = build_key(config.prefix, domain + '.json'),
