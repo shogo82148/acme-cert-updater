@@ -7,6 +7,21 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       Policies:
+        - PolicyName: route53
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "route53:ListHostedZones"
+                  - "route53:GetChange"
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - route53:ChangeResourceRecordSets
+                Resource:
+                  - arn:aws:route53:::hostedzone/Z1TR8BQNS8S1I7
         - PolicyName: sam-validation
           PolicyDocument:
             Version: 2012-10-17
