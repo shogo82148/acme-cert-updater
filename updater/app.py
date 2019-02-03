@@ -1,5 +1,6 @@
 import os
 import boto3
+from botocore.exceptions import ClientError
 import os.path
 import pathlib
 import json
@@ -201,7 +202,24 @@ def build_key(*segment) -> str:
         path = path[1:]
     return path
 
+def needs_init(config) -> bool:
+    bucket = s3.Bucket(config.bucket_name)
+    domains = config.domains.split(',')
+    for domain in domains:
+        domain = domain.strip().replace('*.', '', 1)
+        obj = bucket.Object(build_key(config.prefix, domain + '.json'))
+        try:
+            obj.load()
+        except ClientError:
+            return True 
+    return False
+
 def lambda_handler(event, context):
+    config = Config()
+    if needs_init(config):
+        certonly(config)
+    else:
+        renew(config)
     return {}
 
 if __name__ == "__main__":
