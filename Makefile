@@ -5,6 +5,7 @@ help: ## Show this text.
 .PHONY: help build test validate
 
 build: ## Build SAM application.
+	pipenv lock -r > updater/requirements.txt
 	sam build --use-container
 
 test: ## run tests
