@@ -6,6 +6,7 @@ import json
 import logging
 import tempfile
 import certbot.main
+from datetime import datetime
 
 # set up the logger
 logger = logging.getLogger(__name__)
@@ -62,27 +63,47 @@ def save_cert(config, tmp):
     """upload the certificate files to Amazon S3"""
     bucket = s3.Bucket(config.bucket_name)
     domains = config.domains.split(',')
+    now = datetime.utcnow().isoformat()
     for domain in domains:
         domain = domain.strip().replace('*.', '', 1)
         live = os.path.join(tmp, 'config-dir/live/', domain)
-        bucket.upload_file(os.path.join(live, 'cert.pem'), 'cert.pem')
-        bucket.upload_file(os.path.join(live, 'chain.pem'), 'chain.pem')
-        bucket.upload_file(os.path.join(live, 'fullchain.pem'), 'fullchain.pem')
-        bucket.upload_file(os.path.join(live, 'privkey.pem'), 'privkey.pem')
+        bucket.upload_file(os.path.join(live, 'cert.pem'), build_key(config.prefix, domain, now, 'cert.pem'))
+        bucket.upload_file(os.path.join(live, 'chain.pem'), build_key(config.prefix, domain, now, 'chain.pem'))
+        bucket.upload_file(os.path.join(live, 'fullchain.pem'), build_key(config.prefix, domain, now, 'fullchain.pem'))
+        bucket.upload_file(os.path.join(live, 'privkey.pem'), build_key(config.prefix, domain, now, 'privkey.pem'))
 
-        config = {
+        certconfig = {
             "accounts": {},
+            "csr": {},
+            "keys": {},
         }
         accounts_path = pathlib.Path(os.path.join(tmp, 'config-dir/accounts/'))
         for root, _, files in os.walk(str(accounts_path)):
             for name in files:
                 path = pathlib.Path(root, name)
-                config["accounts"][str(path.relative_to(accounts_path))] = path.read_text()
+                certconfig["accounts"][str(path.relative_to(accounts_path))] = path.read_text()
+        csr_path = pathlib.Path(os.path.join(tmp, 'config-dir/csr/'))
+        for root, _, files in os.walk(str(csr_path)):
+            for name in files:
+                path = pathlib.Path(root, name)
+                certconfig["accounts"][str(path.relative_to(csr_path))] = path.read_text()
+        keys_path = pathlib.Path(os.path.join(tmp, 'config-dir/keys/'))
+        for root, _, files in os.walk(str(keys_path)):
+            for name in files:
+                path = pathlib.Path(root, name)
+                certconfig["accounts"][str(path.relative_to(keys_path))] = path.read_text()
         bucket.put_object(
-            Body = json.dumps(config),
-            Key = domain + '.json',
+            Body = json.dumps(certconfig),
+            Key = build_key(config.prefix, domain + '.json'),
             ContentType = 'application/json',
         )
+
+def build_key(*segment) -> str:
+    path = "/".join(segment)
+    path = path.replace("//", "/")
+    if len(path) > 1 and path[0] == "/":
+        path = path[1:]
+    return path
 
 def lambda_handler(event, context):
     return {}
