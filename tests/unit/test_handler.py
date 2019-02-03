@@ -32,4 +32,6 @@ class Config(object):
         return 'https://acme-v02.api.letsencrypt.org/directory'
 
 def test_certonly():
-    app.certonly(Config())
+    cfg = Config()
+    app.certonly(cfg)
+    app.renew(cfg)

@@ -42,7 +42,7 @@ def certonly(config):
     with tempfile.TemporaryDirectory() as tmp:
         input_array = [
             'certonly',
-            '-n',
+            '--noninteractive',
             '--agree-tos',
             '--email', config.email,
             '--dns-route53',
@@ -58,6 +58,16 @@ def certonly(config):
             input_array.append('--staging')
         certbot.main.main(input_array)
         save_cert(config, tmp)
+
+def renew(config):
+    with tempfile.TemporaryDirectory() as tmp:
+        load_cert(config, tmp)
+        input_array = [
+            'renew',
+            '--config-dir', os.path.join(tmp, 'config-dir/'),
+        ]
+        certbot.main.main(input_array)
+        # save_cert(config, tmp)
 
 s3 = boto3.resource('s3')
 def save_cert(config, tmp):
@@ -94,14 +104,48 @@ def save_cert(config, tmp):
             ContentType = 'application/json',
         )
 
+def load_cert(config, tmp):
+    """upload the certificate files to Amazon S3"""
+    bucket = s3.Bucket(config.bucket_name)
+    domains = config.domains.split(',')
+    for domain in domains:
+        domain = domain.strip().replace('*.', '', 1)
+        obj = bucket.Object(build_key(config.prefix, domain + '.json'))
+        certconfig = json.load(obj.get()['Body'])
+
+        set_files(tmp, 'config-dir/accounts/', certconfig['config']['account'])
+        set_files(tmp, 'config-dir/csr/', certconfig['config']['csr'])
+        set_files(tmp, 'config-dir/keys/', certconfig['config']['keys'])
+        set_renewal_config(tmp, domain, certconfig['config']['renewal'])
+
+        archive = os.path.join(tmp, 'config-dir/archive/', domain)
+        pathlib.Path(archive).mkdir(parents = True, exist_ok = True)
+        live = os.path.join(tmp, 'config-dir/live/', domain)
+        pathlib.Path(live).mkdir(parents = True, exist_ok = True)
+        bucket.download_file(certconfig['cert']['cert'], os.path.join(archive, 'cert1.pem'))
+        bucket.download_file(certconfig['cert']['chain'], os.path.join(archive, 'chain1.pem'))
+        bucket.download_file(certconfig['cert']['fullchain'], os.path.join(archive, 'fullchain1.pem'))
+        bucket.download_file(certconfig['cert']['privkey'], os.path.join(archive, 'privkey1.pem'))
+        os.symlink(os.path.join(archive, 'cert1.pem'), os.path.join(live, 'cert.pem'))
+        os.symlink(os.path.join(archive, 'chain1.pem'), os.path.join(live, 'chain.pem'))
+        os.symlink(os.path.join(archive, 'fullchain1.pem'), os.path.join(live, 'fullchain.pem'))
+        os.symlink(os.path.join(archive, 'privkey1.pem'), os.path.join(live, 'privkey.pem'))
+
 def get_files(tmp, subdir):
     config = {}
-    path = pathlib.Path(os.path.join(tmp, subdir))
+    path = pathlib.Path(tmp, subdir)
     for root, _, files in os.walk(str(path)):
         for name in files:
-            path = pathlib.Path(root, name)
-            config[str(path.relative_to(path))] = path.read_text()
+            filepath = pathlib.Path(root, name)
+            config[str(filepath.relative_to(path))] = filepath.read_text()
     return config
+
+def set_files(tmp, subdir, config):
+    path = pathlib.Path(tmp, subdir)
+    for key, value in config.items():
+        filepath = path.joinpath(key)
+        filepath.parent.mkdir(parents = True, exist_ok = True)
+        filepath.write_text(value)
 
 def get_renewal_config(tmp, domain):
     config = {}
@@ -113,6 +157,23 @@ def get_renewal_config(tmp, domain):
         cfg['renewalparams'][key] = str(pathlib.Path(cfg['renewalparams'][key]).relative_to(tmppath))
     for key, value in cfg.items():
         config[key] = value
+    return config
+
+def set_renewal_config(tmp, domain, config):
+    tmppath = pathlib.Path(tmp)
+    for key in ['archive_dir', 'cert', 'privkey', 'chain', 'fullchain']:
+        config[key] = str(pathlib.Path(tmppath / config[key]))
+    for key in ['config_dir', 'work_dir', 'logs_dir']:
+        config['renewalparams'][key] = str(pathlib.Path(tmppath / config['renewalparams'][key]))
+
+    ret = configobj.ConfigObj()
+    conf_path = pathlib.Path(tmp, 'config-dir', 'renewal', domain + '.conf')
+    conf_path.parent.mkdir(parents = True, exist_ok = True)
+    ret.filename = str(conf_path)
+    for key, value in config.items():
+        ret[key] = value
+    ret.write()
+
 
 def build_key(*segment) -> str:
     path = "/".join(segment)
