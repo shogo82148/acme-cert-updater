@@ -62,7 +62,6 @@ def certonly(config):
 s3 = boto3.resource('s3')
 def save_cert(config, tmp):
     """upload the certificate files to Amazon S3"""
-    tmppath = pathlib.Path(tmp)
     bucket = s3.Bucket(config.bucket_name)
     domains = config.domains.split(',')
     now = datetime.utcnow().isoformat()
@@ -75,41 +74,36 @@ def save_cert(config, tmp):
         bucket.upload_file(os.path.join(live, 'privkey.pem'), build_key(config.prefix, domain, now, 'privkey.pem'))
 
         certconfig = {
-            "accounts": {},
-            "csr": {},
-            "keys": {},
-            "renewal": {},
+            "accounts": get_files(tmp, 'config-dir/accounts'),
+            "csr": get_files(tmp, 'config-dir/csr'),
+            "keys": get_files(tmp, 'config-dir/keys'),
+            "renewal": get_renewal_config(tmp, domain),
         }
-
-        accounts_path = pathlib.Path(os.path.join(tmp, 'config-dir/accounts/'))
-        for root, _, files in os.walk(str(accounts_path)):
-            for name in files:
-                path = pathlib.Path(root, name)
-                certconfig["accounts"][str(path.relative_to(accounts_path))] = path.read_text()
-        csr_path = pathlib.Path(os.path.join(tmp, 'config-dir/csr/'))
-        for root, _, files in os.walk(str(csr_path)):
-            for name in files:
-                path = pathlib.Path(root, name)
-                certconfig["accounts"][str(path.relative_to(csr_path))] = path.read_text()
-        keys_path = pathlib.Path(os.path.join(tmp, 'config-dir/keys/'))
-        for root, _, files in os.walk(str(keys_path)):
-            for name in files:
-                path = pathlib.Path(root, name)
-                certconfig["accounts"][str(path.relative_to(keys_path))] = path.read_text()
-
-        renewal_config = configobj.ConfigObj(os.path.join(tmp, 'config-dir', 'renewal', domain + '.conf'))
-        for key in ['archive_dir', 'cert', 'privkey', 'chain', 'fullchain']:
-            certconfig[key] = str(pathlib.Path(certconfig[key]).relative_to(tmppath))
-        for key in ['config_dir', 'work_dir', 'logs_dir']:
-            certconfig['renewalparams'][key] = str(pathlib.Path(certconfig['renewalparams'][key]).relative_to(tmppath))
-        for key, value in renewal_config.items():
-            certconfig['renewal'][key] = value
-
         bucket.put_object(
             Body = json.dumps(certconfig),
             Key = build_key(config.prefix, domain + '.json'),
             ContentType = 'application/json',
         )
+
+def get_files(tmp, subdir):
+    config = {}
+    path = pathlib.Path(os.path.join(tmp, subdir))
+    for root, _, files in os.walk(str(path)):
+        for name in files:
+            path = pathlib.Path(root, name)
+            config[str(path.relative_to(path))] = path.read_text()
+    return config
+
+def get_renewal_config(tmp, domain):
+    config = {}
+    tmppath = pathlib.Path(tmp)
+    cfg = configobj.ConfigObj(os.path.join(tmp, 'config-dir', 'renewal', domain + '.conf'))
+    for key in ['archive_dir', 'cert', 'privkey', 'chain', 'fullchain']:
+        cfg[key] = str(pathlib.Path(cfg[key]).relative_to(tmppath))
+    for key in ['config_dir', 'work_dir', 'logs_dir']:
+        cfg['renewalparams'][key] = str(pathlib.Path(cfg['renewalparams'][key]).relative_to(tmppath))
+    for key, value in cfg.items():
+        config[key] = value
 
 def build_key(*segment) -> str:
     path = "/".join(segment)
