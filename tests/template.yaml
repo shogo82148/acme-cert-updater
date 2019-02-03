@@ -3,10 +3,24 @@ Description: test environment for acme-cert-updater
 
 Resources:
 
+  TestBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: shogo82148-acme-cert-updater-test
+
   TestUser:
     Type: AWS::IAM::User
     Properties:
       Policies:
+        - PolicyName: s3
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                Resource:
+                  - !GetAtt TestBucket.Arn
         - PolicyName: route53
           PolicyDocument:
             Version: 2012-10-17
