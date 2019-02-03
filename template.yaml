@@ -7,50 +7,68 @@ Description: >
 
 
 Parameters:
-    Domains:
-        Type: String
-        Description: Comma separated list of domains to update the certificates
-    Email:
-        Type: String
-        Description: Email address
-    BucketName:
-        Type: String
-        Description: S3 bucket name for saving the certificates
-    Prefix:
-        Type: String
-        Description: Prefix of objects on S3 bucket
-        Default: ""
-    Environment:
-        Type: String
-        AllowedValues: ["production", "staging"]
-        Default: "production"
-        Description: execution environment
-    AcmeServer:
-        Type: String
-        Default: https://acme-v02.api.letsencrypt.org/directory
-        Description: url for acme server
-
+  Domains:
+    Type: String
+    Description: Comma separated list of domains to update the certificates
+  Email:
+    Type: String
+    Description: Email address
+  BucketName:
+    Type: String
+    Description: S3 bucket name for saving the certificates
+  Prefix:
+    Type: String
+    Description: Prefix of objects on S3 bucket
+    Default: ""
+  Environment:
+    Type: String
+    AllowedValues: ["production", "staging"]
+    Default: "production"
+    Description: execution environment
+  AcmeServer:
+    Type: String
+    Default: https://acme-v02.api.letsencrypt.org/directory
+    Description: url for acme server
+  HostedZone:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Amazon Route 53 Hosted Zone ID
 
 Resources:
 
-    AcmeCertUpdater:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: updater/
-            Handler: app.lambda_handler
-            Runtime: python3.7
-            Environment:
-                Variables:
-                    UPDATER_DOMAINS: !Ref Domains
-                    UPDATER_EMAIL: !Ref Email
-                    UPDATER_BUCKET_NAME: !Ref BucketName
-                    UPDATER_PREFIX: !Ref Prefix
-                    UPDATER_ENVIRONMENT: !Ref Environment
-                    UPDATER_ACME_SERVER: !Ref AcmeServer
-            Timeout: 900
-            Events:
-                Update:
-                    Type: Schedule
-                    Properties:
-                        Schedule: "rate( 12 hours )"
-                        Input: ""
+  AcmeCertUpdater:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updater/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Environment:
+        Variables:
+          UPDATER_DOMAINS: !Ref Domains
+          UPDATER_EMAIL: !Ref Email
+          UPDATER_BUCKET_NAME: !Ref BucketName
+          UPDATER_PREFIX: !Ref Prefix
+          UPDATER_ENVIRONMENT: !Ref Environment
+          UPDATER_ACME_SERVER: !Ref AcmeServer
+      Timeout: 900
+      Events:
+        Update:
+          Type: Schedule
+          Properties:
+            Schedule: "rate( 12 hours )"
+            Input: ""
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BucketName
+        - Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+              - "route53:ListHostedZones"
+              - "route53:GetChange"
+            Resource:
+              - "*"
+          - Effect: Allow
+            Action:
+              - route53:ChangeResourceRecordSets
+            Resource:
+              - !Sub arn:aws:route53:::hostedzone/${HostedZone}
