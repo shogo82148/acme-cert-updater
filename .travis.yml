@@ -3,8 +3,8 @@ python:
   - '3.6' # I want to use Python 3.7, but travis ci not support it :( (2019-02-02)
 
 install:
-  - pip install -r updater/requirements.txt
-  - pip install awscli aws-sam-cli --upgrade
+  - pip install pipenv
+  - pipenv install --dev
 
 script:
   - make test
