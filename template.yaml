@@ -75,7 +75,7 @@ Resources:
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
-        - !If
+        - !If:
           - !Equals [!Ref Notification, ""]
           - !Ref AWS::NoValue
           - SNSPublishMessagePolicy:
