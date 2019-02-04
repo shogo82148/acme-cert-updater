@@ -49,9 +49,6 @@ Parameters:
     Default: ""
     Description: The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
 
-Conditions:
-  HasNotification: !Not [ !Equals [!Ref Notification, ""] ]
-
 Resources:
 
   AcmeCertUpdater:
@@ -79,21 +76,8 @@ Resources:
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
-        - Fn::If:
-          - HasNotification
-          - Version: 2012-10-17
-            Statement:
-            - Effect: Allow
-              Action:
-                - "sns:Publish"
-              Resource:
-                - "*"
-            - Effect: Allow
-              Action:
-                - route53:ChangeResourceRecordSets
-              Resource:
-                - !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
-          - !Ref AWS::NoValue
+        - SNSPublishMessagePolicy:
+            TopicName: !Ref Notification
         - Version: 2012-10-17
           Statement:
           - Effect: Allow
