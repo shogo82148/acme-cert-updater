@@ -65,7 +65,7 @@ Resources:
           UPDATER_PREFIX: !Ref Prefix
           UPDATER_ENVIRONMENT: !Ref Environment
           UPDATER_ACME_SERVER: !Ref AcmeServer
-          UPDATER_NOTIFICATION: !Ref Notification
+          UPDATER_NOTIFICATION: !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
       Timeout: 900
       Events:
         Update:
