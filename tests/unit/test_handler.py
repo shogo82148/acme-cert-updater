@@ -32,6 +32,10 @@ class Config(object):
     def acme_server(self) -> str:
         return 'https://acme-v02.api.letsencrypt.org/directory'
 
+    @property
+    def notification(self) -> str:
+        return ''
+
 def test_certonly():
     cfg = Config()
     assert app.needs_init(cfg) == True
