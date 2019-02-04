@@ -61,7 +61,7 @@ def certonly(config):
             input_array.append('--server')
             input_array.append(config.acme_server)
         else:
-            input_array.append('--staging')
+            input_array.append('--dry-run')
         certbot.main.main(input_array)
         save_cert(config, tmp)
 
@@ -88,6 +88,8 @@ def renew(config):
         if config.environment != 'production':
             # force renewal for testing
             input_array.append('--force-renewal')
+            # connect to the staging environment
+            input_array.append('--dry-run')
 
         certbot.main.main(input_array)
 
