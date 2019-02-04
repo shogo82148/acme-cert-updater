@@ -46,6 +46,7 @@ Parameters:
     Description: Amazon Route 53 Hosted Zone ID
   Notification:
     Type: String
+    Default: ""
     Description: The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
 
 Conditions:
