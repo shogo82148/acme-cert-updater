@@ -17,6 +17,15 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       Policies:
+        - PolicyNmae: sns
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "sns:Publish"
+                Resource:
+                  - !Ref UpdateTopic
         - PolicyName: s3
           PolicyDocument:
             Version: 2012-10-17
