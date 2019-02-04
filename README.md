@@ -1,171 +1,74 @@
-# sam-app
+# acme-cert-updater
 
-This is a sample template for sam-app - Below is a brief explanation of what we have generated for you:
+[![Build Status](https://travis-ci.com/shogo82148/acme-cert-updater.svg?branch=master)](https://travis-ci.com/shogo82148/acme-cert-updater)
 
-```bash
-.
-├── README.md                   <-- This instructions file
-├── hello_world                 <-- Source code for a lambda function
-│   ├── __init__.py
-│   ├── app.py                  <-- Lambda function code
-│   └── requirements.txt        <-- Python dependencies
-├── template.yaml               <-- SAM Template
-└── tests                       <-- Unit tests
-    └── unit
-        ├── __init__.py
-        └── test_handler.py
-```
+The acme-cert-updater automatically updates the certificate using ACME (Automated Certificate Management Environment) and Amazon Route 53.
+It is a pre-build AWS Serverless Application of [Certbot](https://certbot.eff.org/) with [certbot-dns-route53](https://certbot-dns-route53.readthedocs.io/en/stable/) plugin.
 
-## Requirements
+## Usage
 
-* AWS CLI already configured with at least PowerUser permission
-* [Python 3 installed](https://www.python.org/downloads/)
-* [Docker installed](https://www.docker.com/community-edition)
-* [Python Virtual Environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+### Permission
 
-## Setup process
+The acme-cert-updater requires some SAM policy templates (S3ReadPolicy, S3CrudPolicy, and SNSPublishMessagePolicy),
+and CAPABILITY_IAM Capabilities to use the Amazon Web Services Route 53 API.
 
-### Building the project
+### Deploy
 
-[AWS Lambda requires a flat folder](https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html) with the application as well as its dependencies. When you make changes to your source code or dependency manifest,
-run the following command to build your project local testing and deployment:
- 
-```bash
-sam build
-```
+The acme-cert-updater is available on [AWS Serverless Application Repository](https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:445285296882:applications~acme-cert-updater).
 
-If your dependencies contain native modules that need to be compiled specifically for the operating system running on AWS Lambda, use this command to build inside a Lambda-like Docker container instead:
-```bash
-sam build --use-container
-```
- 
-By default, this command writes built artifacts to `.aws-sam/build` folder.
-
-### Local development
-
-**Invoking function locally through local API Gateway**
-
-```bash
-sam local start-api
-```
-
-If the previous command ran successfully you should now be able to hit the following local endpoint to invoke your function `http://localhost:3000/hello`
-
-**SAM CLI** is used to emulate both Lambda and API Gateway locally and uses our `template.yaml` to understand how to bootstrap this environment (runtime, where the source code is, etc.) - The following excerpt is what the CLI will read in order to initialize an API and its routes:
+Or here is a resource template of AWS Serverless Application Model.
 
 ```yaml
-...
-Events:
-    HelloWorld:
-        Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-        Properties:
-            Path: /hello
-            Method: get
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  AcmeCertUpdater:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location:
+        ApplicationId: arn:aws:serverlessrepo:us-east-1:445285296882:applications/acme-cert-updater
+        SemanticVersion: 0.0.7
+      Parameters: 
+        # url for acme server
+        # AcmeServer: https://acme-v02.api.letsencrypt.org/directory # Uncomment to override default value
+        # S3 bucket name for saving the certificates
+        BucketName: YOUR_BUCKET_NAME
+        # Comma separated list of domains to update the certificates
+        Domains: YOUR_DOMAINS
+        # Email address
+        Email: YOUR_EMAIL_ADDRESS
+        # execution environment
+        # Environment: production # Uncomment to override default value
+        # Amazon Route 53 Hosted Zone ID
+        HostedZone: YOUR_HOSTED_ZONE_ID
+        # The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
+        Notification: ARN_SNS_TOPIC
+        # Prefix of objects on S3 bucket
+        # Prefix: ""  # Uncomment to override default value
 ```
 
-## Packaging and deployment
+The following command will create a Cloudformation Stack and deploy the SAM resources.
 
-AWS Lambda Python runtime requires a flat folder with all dependencies including the application. SAM will use `CodeUri` property to know where to look up for both application and dependencies:
-
-```yaml
-...
-    HelloWorldFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: hello_world/
-            ...
+```
+aws cloudformation \
+    --template-file template.yaml \
+    --stack-name <STACK_NAME> \
+    --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM
 ```
 
-Firstly, we need a `S3 bucket` where we can upload our Lambda functions packaged as ZIP before we deploy anything - If you don't have a S3 bucket to store code artifacts then this is a good time to create one:
+### Download the certificate
 
-```bash
-aws s3 mb s3://BUCKET_NAME
+[download-certificate.sh](https://github.com/shogo82148/acme-cert-updater/blob/master/download-certificate.sh) is a helper script for downloading the certificate.
+It downloads the certificate, and executes the given command if the certficate is renewal.
+Here is an example for reloading nginx.
+
+```
+./download-certificate.sh bucket-name example.com.json /etc/ssl/example.com systemctl reload nginx
 ```
 
-Next, run the following command to package our Lambda function to S3:
+bash, [AWS CLI](https://aws.amazon.com/cli/), and [jq](https://stedolan.github.io/jq/) are required.
 
-```bash
-sam package \
-    --output-template-file packaged.yaml \
-    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
-```
+## LICENSE
 
-Next, the following command will create a Cloudformation Stack and deploy your SAM resources.
-
-```bash
-sam deploy \
-    --template-file packaged.yaml \
-    --stack-name sam-app \
-    --capabilities CAPABILITY_IAM
-```
-
-> **See [Serverless Application Model (SAM) HOWTO Guide](https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) for more details in how to get started.**
-
-After deployment is complete you can run the following command to retrieve the API Gateway Endpoint URL:
-
-```bash
-aws cloudformation describe-stacks \
-    --stack-name sam-app \
-    --query 'Stacks[].Outputs'
-``` 
-
-## Testing
-
-We use **Pytest** and **pytest-mock** for testing our code and you can install it using pip: ``pip install pytest pytest-mock`` 
-
-Next, we run `pytest` against our `tests` folder to run our initial unit tests:
-
-```bash
-python -m pytest tests/ -v
-```
-
-**NOTE**: It is recommended to use a Python Virtual environment to separate your application development from  your system Python installation.
-
-# Appendix
-
-### Python Virtual environment
-**In case you're new to this**, python3 comes with `virtualenv` library by default so you can simply run the following:
-
-1. Create a new virtual environment
-2. Install dependencies in the new virtual environment
-
-```bash
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
-```
-
-
-**NOTE:** You can find more information about Virtual Environment at [Python Official Docs here](https://docs.python.org/3/tutorial/venv.html). Alternatively, you may want to look at [Pipenv](https://github.com/pypa/pipenv) as the new way of setting up development workflows
-## AWS CLI commands
-
-AWS CLI commands to package, deploy and describe outputs defined within the cloudformation stack:
-
-```bash
-sam package \
-    --output-template-file packaged.yaml \
-    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
-
-sam deploy \
-    --template-file packaged.yaml \
-    --stack-name sam-app \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides MyParameterSample=MySampleValue
-
-aws cloudformation describe-stacks \
-    --stack-name sam-app --query 'Stacks[].Outputs'
-```
-
-## Bringing to the next level
-
-Here are a few ideas that you can use to get more acquainted as to how this overall process works:
-
-* Create an additional API resource (e.g. /hello/{proxy+}) and return the name requested through this new path
-* Update unit test to capture that
-* Package & Deploy
-
-Next, you can use the following resources to know more about beyond hello world samples and how others structure their Serverless applications:
-
-* [AWS Serverless Application Repository](https://aws.amazon.com/serverless/serverlessrepo/)
-* [Chalice Python Serverless framework](https://github.com/aws/chalice)
-* Sample Python with 3rd party dependencies, pipenv and Makefile: ``sam init --location https://github.com/aws-samples/cookiecutter-aws-sam-python``
+MIT License Copyright (c) 2019 Ichinose Shogo

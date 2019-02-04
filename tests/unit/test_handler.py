@@ -42,7 +42,6 @@ def test_certonly():
     assert app.needs_init(cfg) == True
     app.certonly(cfg)
 
-    time.sleep(10)
     assert app.needs_init(cfg) == False
     app.renew(cfg)
 
