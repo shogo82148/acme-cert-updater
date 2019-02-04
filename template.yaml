@@ -81,8 +81,18 @@ Resources:
             BucketName: !Ref BucketName
         - Fn::If:
           - HasNotification
-          - SNSPublishMessagePolicy:
-              TopicName: !Ref Notification
+          - Version: 2012-10-17
+            Statement:
+            - Effect: Allow
+              Action:
+                - "sns:Publish"
+              Resource:
+                - "*"
+            - Effect: Allow
+              Action:
+                - route53:ChangeResourceRecordSets
+              Resource:
+                - !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
           - !Ref AWS::NoValue
         - Version: 2012-10-17
           Statement:
