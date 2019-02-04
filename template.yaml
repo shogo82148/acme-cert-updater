@@ -48,6 +48,9 @@ Parameters:
     Type: String
     Description: The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
 
+Conditions:
+  HasNotification: !Not [ !Equals [!Ref Notification, ""] ]
+
 Resources:
 
   AcmeCertUpdater:
@@ -75,11 +78,11 @@ Resources:
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
-        - !If:
-          - !Equals [!Ref Notification, ""]
-          - !Ref AWS::NoValue
+        - Fn::If:
+          - HasNotification
           - SNSPublishMessagePolicy:
               TopicName: !Ref Notification
+          - !Ref AWS::NoValue
         - Version: 2012-10-17
           Statement:
           - Effect: Allow
