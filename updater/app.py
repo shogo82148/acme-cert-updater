@@ -12,7 +12,7 @@ from datetime import datetime
 
 # set up the logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 class Config(object):
     @property
