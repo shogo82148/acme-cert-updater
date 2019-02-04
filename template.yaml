@@ -44,6 +44,9 @@ Parameters:
   HostedZone:
     Type: AWS::Route53::HostedZone::Id
     Description: Amazon Route 53 Hosted Zone ID
+  Notification:
+    Type: String
+    Description: The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
 
 Resources:
 
@@ -61,6 +64,7 @@ Resources:
           UPDATER_PREFIX: !Ref Prefix
           UPDATER_ENVIRONMENT: !Ref Environment
           UPDATER_ACME_SERVER: !Ref AcmeServer
+          UPDATER_NOTIFICATION: !Ref Notification
       Timeout: 900
       Events:
         Update:
@@ -71,6 +75,11 @@ Resources:
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
+        - !If
+          - !Equals [!Ref Notification, ""]
+          - !Ref AWS::NoValue
+          - SNSPublishMessagePolicy:
+              TopicName: !Ref Notification
         - Version: 2012-10-17
           Statement:
           - Effect: Allow

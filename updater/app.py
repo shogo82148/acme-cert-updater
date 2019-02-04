@@ -4,6 +4,7 @@ from botocore.exceptions import ClientError
 import os.path
 import pathlib
 import json
+import string
 import logging
 import tempfile
 import certbot.main
@@ -38,6 +39,10 @@ class Config(object):
     @property
     def acme_server(self) -> str:
         return os.environ.get('UPDATER_ACME_SERVER', 'https://acme-v02.api.letsencrypt.org/directory')
+
+    @property
+    def notification(self) -> str:
+        return os.environ.get('UPDATER_NOTIFICATION')
 
 def certonly(config):
     with tempfile.TemporaryDirectory() as tmp:
@@ -93,10 +98,9 @@ s3 = boto3.resource('s3')
 def save_cert(config, tmp):
     """upload the certificate files to Amazon S3"""
     bucket = s3.Bucket(config.bucket_name)
-    domains = config.domains.split(',')
+    domains = set(domain.strip().replace('*.', '', 1) for domain in config.domains.split(','))
     now = datetime.utcnow().isoformat()
     for domain in domains:
-        domain = domain.strip().replace('*.', '', 1)
         live = os.path.join(tmp, 'config-dir/live/', domain)
         bucket.upload_file(os.path.join(live, 'cert.pem'), build_key(config.prefix, domain, now, 'cert.pem'))
         bucket.upload_file(os.path.join(live, 'chain.pem'), build_key(config.prefix, domain, now, 'chain.pem'))
@@ -105,6 +109,7 @@ def save_cert(config, tmp):
 
         certconfig = {
             'timestamp': now,
+            'domain': domain,
             'config': {
                 'account': get_files(tmp, 'config-dir/accounts'),
                 'csr': get_files(tmp, 'config-dir/csr'),
@@ -123,6 +128,7 @@ def save_cert(config, tmp):
             Key = build_key(config.prefix, domain + '.json'),
             ContentType = 'application/json',
         )
+        notify(config, certconfig, build_key(config.prefix, domain + '.json'))
 
 def load_cert(config, tmp):
     """upload the certificate files to Amazon S3"""
@@ -201,6 +207,37 @@ def build_key(*segment) -> str:
     if len(path) > 1 and path[0] == "/":
         path = path[1:]
     return path
+
+sns = boto3.resource('sns')
+def notify(config, certconfig, key):
+    if config.notification == '':
+        return
+    template = string.Template("""acme-cert-updater
+the certification is updated.
+
+- domain: $domain
+- bucket: $bucket
+- object key: $key
+""")
+    text_message = template.substitute(
+        domain = certconfig['domain'],
+        bucket = config.bucket_name,
+        key = key,
+    )
+    json_message = json.dumps({
+        'domain': certconfig['domain'],
+        'bucket': config.bucket_name,
+        'key': key,
+    })
+    message = json.dumps({
+        'default': json_message,
+        'email': text_message,
+    })
+    sns.publish(
+        TopicArn = config.notification,
+        Message = message,
+        MessageStructure = "json",
+    )
 
 def needs_init(config) -> bool:
     bucket = s3.Bucket(config.bucket_name)
