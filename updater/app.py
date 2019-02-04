@@ -61,7 +61,7 @@ def certonly(config):
             input_array.append('--server')
             input_array.append(config.acme_server)
         else:
-            input_array.append('--dry-run')
+            input_array.append('--staging')
         certbot.main.main(input_array)
         save_cert(config, tmp)
 
@@ -89,7 +89,7 @@ def renew(config):
             # force renewal for testing
             input_array.append('--force-renewal')
             # connect to the staging environment
-            input_array.append('--dry-run')
+            input_array.append('--staging')
 
         certbot.main.main(input_array)
 
@@ -135,9 +135,8 @@ def save_cert(config, tmp):
 def load_cert(config, tmp):
     """upload the certificate files to Amazon S3"""
     bucket = s3.Bucket(config.bucket_name)
-    domains = config.domains.split(',')
+    domains = set(domain.strip().replace('*.', '', 1) for domain in config.domains.split(','))
     for domain in domains:
-        domain = domain.strip().replace('*.', '', 1)
         obj = bucket.Object(build_key(config.prefix, domain + '.json'))
         certconfig = json.load(obj.get()['Body'])
 
@@ -148,12 +147,13 @@ def load_cert(config, tmp):
 
         archive = os.path.join(tmp, 'config-dir/archive/', domain)
         pathlib.Path(archive).mkdir(parents = True, exist_ok = True)
-        live = os.path.join(tmp, 'config-dir/live/', domain)
-        pathlib.Path(live).mkdir(parents = True, exist_ok = True)
         bucket.download_file(certconfig['cert']['cert'], os.path.join(archive, 'cert1.pem'))
         bucket.download_file(certconfig['cert']['chain'], os.path.join(archive, 'chain1.pem'))
         bucket.download_file(certconfig['cert']['fullchain'], os.path.join(archive, 'fullchain1.pem'))
         bucket.download_file(certconfig['cert']['privkey'], os.path.join(archive, 'privkey1.pem'))
+
+        live = os.path.join(tmp, 'config-dir/live/', domain)
+        pathlib.Path(live).mkdir(parents = True, exist_ok = True)
         os.symlink(os.path.join(archive, 'cert1.pem'), os.path.join(live, 'cert.pem'))
         os.symlink(os.path.join(archive, 'chain1.pem'), os.path.join(live, 'chain.pem'))
         os.symlink(os.path.join(archive, 'fullchain1.pem'), os.path.join(live, 'fullchain.pem'))
