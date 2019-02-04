@@ -3,6 +3,11 @@ Description: test environment for acme-cert-updater
 
 Resources:
 
+  UpdateTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: acme-cert-updater-test
+
   TestBucket:
     Type: AWS::S3::Bucket
     Properties:

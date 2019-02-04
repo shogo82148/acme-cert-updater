@@ -208,7 +208,7 @@ def build_key(*segment) -> str:
         path = path[1:]
     return path
 
-sns = boto3.resource('sns')
+sns = boto3.client('sns')
 def notify(config, certconfig, key):
     if config.notification == '':
         return

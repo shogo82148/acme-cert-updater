@@ -1,6 +1,7 @@
 import pytest
 import secrets
 import boto3
+import time
 
 from updater import app
 
@@ -34,12 +35,14 @@ class Config(object):
 
     @property
     def notification(self) -> str:
-        return ''
+        return 'arn:aws:sns:ap-northeast-1:445285296882:acme-cert-updater-test-UpdateTopic-141WK4DP5P40E'
 
 def test_certonly():
     cfg = Config()
     assert app.needs_init(cfg) == True
     app.certonly(cfg)
+
+    time.sleep(10)
     assert app.needs_init(cfg) == False
     app.renew(cfg)
 
@@ -47,3 +50,9 @@ def test_certonly():
     s3.Bucket(cfg.bucket_name).objects.filter(
         Prefix = cfg.prefix + '/',
     ).delete()
+
+def test_notify():
+    cfg = Config()
+    app.notify(cfg, {
+        'domain': 'shogo82148.com',
+    }, 'fooobar.json')
