@@ -17,7 +17,7 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       Policies:
-        - PolicyNmae: sns
+        - PolicyName: sns
           PolicyDocument:
             Version: 2012-10-17
             Statement:
