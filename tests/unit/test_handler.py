@@ -35,7 +35,7 @@ class Config(object):
 
     @property
     def notification(self) -> str:
-        return 'acme-cert-updater-test-UpdateTopic-141WK4DP5P40E'
+        return 'arn:aws:sns:ap-northeast-1:445285296882:acme-cert-updater-test-UpdateTopic-141WK4DP5P40E'
 
 def test_certonly():
     cfg = Config()
