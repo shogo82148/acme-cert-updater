@@ -1,8 +1,8 @@
 -i https://pypi.org/simple
 acme==0.30.2
 asn1crypto==0.24.0
-boto3==1.9.86
-botocore==1.12.86
+boto3==1.9.87
+botocore==1.12.87
 certbot-dns-route53==0.30.2
 certbot==0.30.2
 certifi==2018.11.29
