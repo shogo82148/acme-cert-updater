@@ -8,6 +8,7 @@ pylint = "*"
 pytest = "*"
 awscli = "*"
 aws-sam-cli = "*"
+mypy = "*"
 
 [packages]
 boto3 = "*"

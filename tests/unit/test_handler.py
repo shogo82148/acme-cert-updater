@@ -1,11 +1,13 @@
-import pytest
-import secrets
-import boto3
-import time
+"""tests of acme-cert-updater"""
 
+import secrets
+
+import boto3
 from updater import app
 
-class Config(object):
+# pylint: disable=missing-docstring
+
+class Config:
     def __init__(self):
         self._prefix = secrets.token_hex(16)
 
@@ -16,7 +18,7 @@ class Config(object):
     @property
     def email(self) -> str:
         return "shogo82148@gmail.com"
-    
+
     @property
     def bucket_name(self) -> str:
         return "shogo82148-acme-cert-updater-test"
@@ -35,19 +37,20 @@ class Config(object):
 
     @property
     def notification(self) -> str:
+        # pylint: disable=line-too-long
         return 'arn:aws:sns:ap-northeast-1:445285296882:acme-cert-updater-test-UpdateTopic-141WK4DP5P40E'
 
 def test_certonly():
     cfg = Config()
-    assert app.needs_init(cfg) == True
+    assert app.needs_init(cfg)
     app.certonly(cfg)
 
-    assert app.needs_init(cfg) == False
+    assert not app.needs_init(cfg)
     app.renew(cfg)
 
-    s3 = boto3.resource('s3')
+    s3 = boto3.resource('s3') # pylint: disable=invalid-name
     s3.Bucket(cfg.bucket_name).objects.filter(
-        Prefix = cfg.prefix + '/',
+        Prefix=cfg.prefix+'/',
     ).delete()
 
 def test_notify():
