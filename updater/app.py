@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.INFO)
+
 import os
 import boto3
 from botocore.exceptions import ClientError
@@ -5,7 +8,6 @@ import os.path
 import pathlib
 import json
 import string
-import logging
 import tempfile
 import certbot.main
 import configobj
