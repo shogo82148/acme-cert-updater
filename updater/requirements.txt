@@ -1,8 +1,8 @@
 -i https://pypi.org/simple
 acme==0.37.1
 asn1crypto==0.24.0
-boto3==1.9.205
-botocore==1.12.205
+boto3==1.9.42
+botocore==1.12.42
 certbot-dns-route53==0.37.1
 certbot==0.37.1
 certifi==2019.6.16
@@ -11,7 +11,7 @@ chardet==3.0.4
 configargparse==0.14.0
 configobj==5.0.6
 cryptography==2.7
-docutils==0.14
+docutils==0.15.2
 future==0.17.1
 idna==2.8
 jmespath==0.9.4
@@ -26,9 +26,9 @@ pytz==2019.2
 pyyaml==5.1.2
 requests-toolbelt==0.9.1
 requests[security]==2.22.0
-s3transfer==0.2.1
+s3transfer==0.1.13
 six==1.12.0
-urllib3==1.25.3 ; python_version >= '3.4'
+urllib3==1.24.3 ; python_version >= '3.4'
 zope.component==4.5
 zope.deferredimport==4.3.1
 zope.deprecation==4.4.0
