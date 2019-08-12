@@ -12,6 +12,7 @@ import string
 import tempfile
 from datetime import datetime
 from typing import Dict, Union
+from unittest import mock
 
 import logging
 import boto3
@@ -63,6 +64,34 @@ class Config:
         """The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events."""
         return os.environ.get('UPDATER_NOTIFICATION', '')
 
+class mock_atexit:
+    """patch certbot.util.atexit"""
+
+    def __init__(self):
+        patch = mock.patch("certbot.util.atexit")
+        self._patch = patch
+        self._func = []
+
+    def register(self, func, *args, **kwargs):
+        """register dummy atexit"""
+        self._func.append([func, args, kwargs])
+
+    def atexit_call(self):
+        """call atexit functions"""
+        for func, args, kwargs in reversed(self._func):
+            func(*args, **kwargs)
+        self._func = []
+
+    def __enter__(self):
+        result = self._patch.start()
+        register = result.register
+        register.side_effect = self.register
+        return self
+
+    def __exit__(self, ex_type, ex_value, trace):
+        self._patch.stop()
+        self.atexit_call()
+
 def certonly(config) -> None:
     """get new certificate"""
     with tempfile.TemporaryDirectory() as tmp:
@@ -82,7 +111,10 @@ def certonly(config) -> None:
             input_array.append(config.acme_server)
         else:
             input_array.append('--staging')
-        certbot.main.main(input_array)
+
+        with mock_atexit():
+            certbot.main.main(input_array)
+
         save_cert(config, tmp)
 
 def renew(config) -> None:
@@ -112,7 +144,8 @@ def renew(config) -> None:
             # connect to the staging environment
             input_array.append('--staging')
 
-        certbot.main.main(input_array)
+        with mock_atexit():
+            certbot.main.main(input_array)
 
         if flag.exists():
             save_cert(config, tmp)
