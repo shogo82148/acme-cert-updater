@@ -7,6 +7,12 @@ help: ## Show this text.
 build: ## Build SAM application.
 	pipenv lock -r > updater/requirements.txt
 	sam build --use-container
+	cp README.md .aws-sam/build/
+	cp LICENSE .aws-sam/build/
+
+	# boto3 and botocore are pre-installed in Python 3.7 runtime
+	rm -r .aws-sam/build/AcmeCertUpdater/boto3*
+	rm -r .aws-sam/build/AcmeCertUpdater/botocore*
 
 test: ## run tests
 	python -m pytest tests/ -v
@@ -14,11 +20,7 @@ test: ## run tests
 validate: ## validate SAM template
 	sam validate
 
-release: ## Release the application to AWS Serverless Application Repository
-	pipenv lock -r > updater/requirements.txt
-	sam build --use-container
-	cp README.md .aws-sam/build/
-	cp LICENSE .aws-sam/build/
+release: build ## Release the application to AWS Serverless Application Repository
 	sam package \
 		--template-file .aws-sam/build/template.yaml \
 		--output-template-file .aws-sam/build/packaged.yaml \

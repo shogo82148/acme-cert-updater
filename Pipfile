@@ -11,11 +11,15 @@ aws-sam-cli = "*"
 mypy = "*"
 
 [packages]
-boto3 = "*"
+# pre-install SDK version
+# https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+boto3 = "==1.9.42"
+botocore = "==1.12.42"
+
 configobj = "*"
 certbot = "*"
 certbot-dns-route53 = "*"
 pyyaml = ">=4.2b1"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
