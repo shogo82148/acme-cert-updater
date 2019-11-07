@@ -10,10 +10,6 @@ build: ## Build SAM application.
 	cp README.md .aws-sam/build/
 	cp LICENSE .aws-sam/build/
 
-	# boto3 and botocore are pre-installed in Python 3.7 runtime
-	rm -r .aws-sam/build/AcmeCertUpdater/boto3*
-	rm -r .aws-sam/build/AcmeCertUpdater/botocore*
-
 test: ## run tests
 	python -m pytest tests/ -v
 
