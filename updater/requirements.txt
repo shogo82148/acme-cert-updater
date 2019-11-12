@@ -29,7 +29,7 @@ requests[security]==2.22.0
 s3transfer==0.2.1
 six==1.13.0
 urllib3==1.25.7 ; python_version >= '3.4'
-zope.component==4.5
+zope.component==4.6
 zope.deferredimport==4.3.1
 zope.deprecation==4.4.0
 zope.event==4.4
