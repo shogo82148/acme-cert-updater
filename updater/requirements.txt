@@ -33,6 +33,6 @@ zope.component==4.5
 zope.deferredimport==4.3.1
 zope.deprecation==4.4.0
 zope.event==4.4
-zope.hookable==4.2.0
+zope.hookable==5.0.0
 zope.interface==4.7.1
 zope.proxy==4.3.3
