@@ -509,11 +509,11 @@
         },
         "awscli": {
             "hashes": [
-                "sha256:9ab802ba88ce5f50773618ea80ff1c3b69906c21593f0f2117427e0a1db93df0",
-                "sha256:cac364506d3b5e5060e768c287986f15e4ed82b0c76b79454a21e85138efd59f"
+                "sha256:81356027178d6d7f7635207cbc5ac1b5154269875a89d63c3d7c0b69d79a598f",
+                "sha256:a0bc5404852454cd6ff9e2e1a54767d27277b6a1e5217f499cd004135babcb9b"
             ],
             "index": "pypi",
-            "version": "==1.16.280"
+            "version": "==1.16.282"
         },
         "binaryornot": {
             "hashes": [
