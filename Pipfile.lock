@@ -494,12 +494,12 @@
         },
         "aws-sam-cli": {
             "hashes": [
-                "sha256:06bff537f8d0ff795b3f8140a943eaf08ec50d6fbc190833f27c296b9385ab33",
-                "sha256:14edb8cef0fe0d671e696b2d001c62ea1e2132ef344e508db4be5cb4ba4f3199",
-                "sha256:e88cb053e4c4f35cd2a353f056a294dca529efd3a48f3eb794dae64d9b0fda6b"
+                "sha256:4e1da0d1e6b87147e460039447f7041508dc66b06f7fc4c97686f13abad637ca",
+                "sha256:731c98dc88029bbe9f6734afbeedb2c105b86bf4177de1518c82847ec619002b",
+                "sha256:7d50d832a9fc00ea526d5408e0ef6461044be1e5733b33dd20c36930ecab926f"
             ],
             "index": "pypi",
-            "version": "==0.31.0"
+            "version": "==0.31.1"
         },
         "aws-sam-translator": {
             "hashes": [
