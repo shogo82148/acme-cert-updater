@@ -4,7 +4,7 @@ boto3==1.10.13
 botocore==1.13.18
 certbot-dns-route53==0.40.1
 certbot==0.40.1
-certifi==2019.9.11
+certifi==2019.11.28
 cffi==1.13.2
 chardet==3.0.4
 configargparse==0.15.1
@@ -12,14 +12,13 @@ configobj==5.0.6
 cryptography==2.8
 distro==1.4.0
 docutils==0.15.2
-future==0.18.2
 idna==2.8
 jmespath==0.9.4
 josepy==1.2.0
 mock==3.0.5
-parsedatetime==2.4
+parsedatetime==2.5
 pycparser==2.19
-pyopenssl==19.0.0
+pyopenssl==19.1.0
 pyrfc3339==1.1
 python-dateutil==2.8.0 ; python_version >= '2.7'
 pytz==2019.3
