@@ -49,6 +49,9 @@ Parameters:
     Default: ""
     Description: The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
 
+Conditions:
+  HasNotification: !Not [ !Equals [ !Ref Notification, ""] ]
+
 Resources:
 
   AcmeCertUpdater:
@@ -56,7 +59,7 @@ Resources:
     Properties:
       CodeUri: updater/
       Handler: app.lambda_handler
-      Runtime: python3.7
+      Runtime: python3.8
       Environment:
         Variables:
           UPDATER_DOMAINS: !Ref Domains
@@ -65,7 +68,10 @@ Resources:
           UPDATER_PREFIX: !Ref Prefix
           UPDATER_ENVIRONMENT: !Ref Environment
           UPDATER_ACME_SERVER: !Ref AcmeServer
-          UPDATER_NOTIFICATION: !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
+          UPDATER_NOTIFICATION: !If
+            - HasNotification
+            - !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
+            - ""
       Timeout: 900
       Events:
         Update:
