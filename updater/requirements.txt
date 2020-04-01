@@ -34,4 +34,4 @@ zope.deprecation==4.4.0
 zope.event==4.4
 zope.hookable==5.0.0
 zope.interface==5.0.2
-zope.proxy==4.3.3
+zope.proxy==4.3.5
