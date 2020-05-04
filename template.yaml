@@ -62,7 +62,6 @@ Resources:
       Runtime: python3.8
       Environment:
         Variables:
-          UPDATER_DOMAINS: !Ref Domains
           UPDATER_EMAIL: !Ref Email
           UPDATER_BUCKET_NAME: !Ref BucketName
           UPDATER_PREFIX: !Ref Prefix
@@ -78,7 +77,7 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: "rate(12 hours)"
-            Input: ""
+            Input: !Sub '{"domains":"${Domains}"}'
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName

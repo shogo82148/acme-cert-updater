@@ -11,7 +11,7 @@ import json
 import string
 import tempfile
 from datetime import datetime
-from typing import Dict, Union
+from typing import Dict, Union, List
 from unittest import mock
 
 import logging
@@ -20,16 +20,50 @@ from botocore.exceptions import ClientError
 import certbot.main
 import configobj
 
+# certificate name that certbot generates
+CERTNAME = 'acme-cert-updater'
+
 # set up the logger
 logging.basicConfig(level=logging.INFO)
 
 class Config:
     """configure of acme-cert-update"""
 
+    def __init__(self, event):
+        """initialize Config"""
+        domains = event.get('domains', '')
+        if isinstance(domains, str):
+            # the domains field is comma separated string
+            self.__domains = [domain.strip().lower() for domain in domains.split(',')]
+        elif isinstance(domains, List):
+            self.__domains = [domain.strip().lower() for domain in domains]
+        else:
+            raise ValueError("invalid domains")
+
+        if len(self.__domains) == 0:
+            self.__cert_name = ''
+            return
+
+        cert_name = event.get('cert_name', '')
+        if cert_name == '':
+            self.__cert_name = Config._trim_wildcard(self.__domains[0])
+        else:
+            self.__cert_name = cert_name.lower()
+
+    @classmethod
+    def _trim_wildcard(cls, domain: str) -> str:
+        if domain.startswith('*.'):
+            return domain[2:]
+        return domain
+
     @property
-    def domains(self) -> str:
-        """Comma separated list of domains to update the certificates"""
-        return os.environ.get('UPDATER_DOMAINS', '')
+    def domains(self) -> List[str]:
+        """domain names for issue"""
+        return self.__domains
+
+    @property
+    def cert_name(self) -> str:
+        return self.__cert_name
 
     @property
     def email(self) -> str:
@@ -101,11 +135,16 @@ def certonly(config) -> None:
             '--agree-tos',
             '--email', config.email,
             '--dns-route53',
-            '-d', config.domains,
             '--config-dir', os.path.join(tmp, 'config-dir/'),
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
+            '--cert-name', CERTNAME,
         ]
+
+        for domain in config.domains:
+            input_array.append('--domains')
+            input_array.append(domain)
+
         if config.environment == 'production':
             input_array.append('--server')
             input_array.append(config.acme_server)
@@ -154,66 +193,63 @@ s3 = boto3.resource('s3') # pylint: disable=invalid-name
 def save_cert(config, tmp: str) -> None:
     """upload the certificate files to Amazon S3"""
     bucket = s3.Bucket(config.bucket_name)
-    domains = set(domain.strip().replace('*.', '', 1) for domain in config.domains.split(','))
     now = datetime.utcnow().isoformat()
-    for domain in domains:
-        live = os.path.join(tmp, 'config-dir/live/', domain)
-        for filename in ['cert.pem', 'chain.pem', 'fullchain.pem', 'privkey.pem']:
-            bucket.upload_file(
-                os.path.join(live, filename),
-                build_key(config.prefix, domain, now, filename),
-            )
-
-        certconfig = {
-            'timestamp': now,
-            'domain': domain,
-            'config': {
-                'account': get_files(tmp, 'config-dir/accounts'),
-                'csr': get_files(tmp, 'config-dir/csr'),
-                'keys': get_files(tmp, 'config-dir/keys'),
-                'renewal': get_renewal_config(tmp, domain),
-            },
-            'cert': {
-                'cert': build_key(config.prefix, domain, now, 'cert.pem'),
-                'chain': build_key(config.prefix, domain, now, 'chain.pem'),
-                'fullchain': build_key(config.prefix, domain, now, 'fullchain.pem'),
-                'privkey': build_key(config.prefix, domain, now, 'privkey.pem'),
-            },
-        }
-        bucket.put_object(
-            Body=json.dumps(certconfig),
-            Key=build_key(config.prefix, domain + '.json'),
-            ContentType='application/json',
+    live = os.path.join(tmp, 'config-dir/live/', CERTNAME)
+    for filename in ['cert.pem', 'chain.pem', 'fullchain.pem', 'privkey.pem']:
+        bucket.upload_file(
+            os.path.join(live, filename),
+            build_key(config.prefix, config.cert_name, now, filename),
         )
-        notify(config, certconfig, build_key(config.prefix, domain + '.json'))
+
+    certconfig = {
+        'timestamp': now,
+        'domain': config.cert_name, # for backward compatibility
+        'cert_name': config.cert_name,
+        'config': {
+            'account': get_files(tmp, 'config-dir/accounts'),
+            'csr': get_files(tmp, 'config-dir/csr'),
+            'keys': get_files(tmp, 'config-dir/keys'),
+            'renewal': get_renewal_config(tmp, CERTNAME),
+        },
+        'cert': {
+            'cert': build_key(config.prefix, config.cert_name, now, 'cert.pem'),
+            'chain': build_key(config.prefix, config.cert_name, now, 'chain.pem'),
+            'fullchain': build_key(config.prefix, config.cert_name, now, 'fullchain.pem'),
+            'privkey': build_key(config.prefix, config.cert_name, now, 'privkey.pem'),
+        },
+    }
+    bucket.put_object(
+        Body=json.dumps(certconfig),
+        Key=build_key(config.prefix, config.cert_name + '.json'),
+        ContentType='application/json',
+    )
+    notify(config, certconfig, build_key(config.prefix, config.cert_name + '.json'))
 
 def load_cert(config, tmp: str) -> None:
     """upload the certificate files to Amazon S3"""
     bucket = s3.Bucket(config.bucket_name)
-    domains = set(domain.strip().replace('*.', '', 1) for domain in config.domains.split(','))
-    for domain in domains:
-        obj = bucket.Object(build_key(config.prefix, domain + '.json'))
-        certconfig = json.load(obj.get()['Body'])
+    obj = bucket.Object(build_key(config.prefix, config.cert_name + '.json'))
+    certconfig = json.load(obj.get()['Body'])
 
-        set_files(tmp, 'config-dir/accounts/', certconfig['config']['account'])
-        set_files(tmp, 'config-dir/csr/', certconfig['config']['csr'])
-        set_files(tmp, 'config-dir/keys/', certconfig['config']['keys'])
-        set_renewal_config(tmp, domain, certconfig['config']['renewal'])
+    set_files(tmp, 'config-dir/accounts/', certconfig['config']['account'])
+    set_files(tmp, 'config-dir/csr/', certconfig['config']['csr'])
+    set_files(tmp, 'config-dir/keys/', certconfig['config']['keys'])
+    set_renewal_config(tmp, CERTNAME, certconfig['config']['renewal'])
 
-        archive = os.path.join(tmp, 'config-dir/archive/', domain)
-        pathlib.Path(archive).mkdir(parents=True, exist_ok=True)
-        cert = certconfig['cert']
-        bucket.download_file(cert['cert'], os.path.join(archive, 'cert1.pem'))
-        bucket.download_file(cert['chain'], os.path.join(archive, 'chain1.pem'))
-        bucket.download_file(cert['fullchain'], os.path.join(archive, 'fullchain1.pem'))
-        bucket.download_file(cert['privkey'], os.path.join(archive, 'privkey1.pem'))
+    archive = os.path.join(tmp, 'config-dir', 'archive', CERTNAME)
+    pathlib.Path(archive).mkdir(parents=True, exist_ok=True)
+    cert = certconfig['cert']
+    bucket.download_file(cert['cert'], os.path.join(archive, 'cert1.pem'))
+    bucket.download_file(cert['chain'], os.path.join(archive, 'chain1.pem'))
+    bucket.download_file(cert['fullchain'], os.path.join(archive, 'fullchain1.pem'))
+    bucket.download_file(cert['privkey'], os.path.join(archive, 'privkey1.pem'))
 
-        live = os.path.join(tmp, 'config-dir/live/', domain)
-        pathlib.Path(live).mkdir(parents=True, exist_ok=True)
-        os.symlink(os.path.join(archive, 'cert1.pem'), os.path.join(live, 'cert.pem'))
-        os.symlink(os.path.join(archive, 'chain1.pem'), os.path.join(live, 'chain.pem'))
-        os.symlink(os.path.join(archive, 'fullchain1.pem'), os.path.join(live, 'fullchain.pem'))
-        os.symlink(os.path.join(archive, 'privkey1.pem'), os.path.join(live, 'privkey.pem'))
+    live = os.path.join(tmp, 'config-dir', 'live', CERTNAME)
+    pathlib.Path(live).mkdir(parents=True, exist_ok=True)
+    os.symlink(os.path.join(archive, 'cert1.pem'), os.path.join(live, 'cert.pem'))
+    os.symlink(os.path.join(archive, 'chain1.pem'), os.path.join(live, 'chain.pem'))
+    os.symlink(os.path.join(archive, 'fullchain1.pem'), os.path.join(live, 'fullchain.pem'))
+    os.symlink(os.path.join(archive, 'privkey1.pem'), os.path.join(live, 'privkey.pem'))
 
 def get_files(tmp: str, subdir: str) -> Dict[str, str]:
     """get_files gets file contents as dict"""
@@ -308,19 +344,21 @@ the certification is updated.
 def needs_init(config) -> bool:
     """check initialize is required"""
     bucket = s3.Bucket(config.bucket_name)
-    domains = config.domains.split(',')
-    for domain in domains:
-        domain = domain.strip().replace('*.', '', 1)
-        obj = bucket.Object(build_key(config.prefix, domain + '.json'))
-        try:
-            obj.load()
-        except ClientError:
-            return True
+    obj = bucket.Object(build_key(config.prefix, config.cert_name + '.json'))
+    try:
+        obj.load()
+    except ClientError:
+        return True
     return False
 
 def lambda_handler(event, context): # pylint: disable=unused-argument
     """entry point of AWS Lambda"""
-    config = Config()
+
+    config = Config(event)
+    if len(config.domains) == 0:
+        # nothing to do
+        return {}
+
     if needs_init(config):
         certonly(config)
     else:
