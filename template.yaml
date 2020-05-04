@@ -22,6 +22,10 @@ Parameters:
   Domains:
     Type: String
     Description: Comma separated list of domains to update the certificates
+  CertName:
+    Type: String
+    Description: the S3 key of certificate. the default value is the first domain name.
+    Default: ""
   Email:
     Type: String
     Description: Email address
@@ -77,7 +81,7 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: "rate(12 hours)"
-            Input: !Sub '{"domains":"${Domains}"}'
+            Input: !Sub '{"domains":"${Domains}","cert_name":"${CertName}"}'
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
@@ -96,3 +100,8 @@ Resources:
               - route53:ChangeResourceRecordSets
             Resource:
               - !Sub arn:aws:route53:::hostedzone/${HostedZone}
+
+Outputs:
+  Arn:
+    Description: the arn of updater AWS Lambda function
+    Value: !GetAtt AcmeCertUpdater.Arn
