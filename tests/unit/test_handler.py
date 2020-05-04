@@ -3,6 +3,7 @@
 import secrets
 
 import boto3
+from typing import List
 from updater import app
 
 # pylint: disable=missing-docstring
@@ -12,8 +13,12 @@ class Config:
         self._prefix = secrets.token_hex(16)
 
     @property
-    def domains(self):
-        return "*.shogo82148.com"
+    def domains(self) -> List[str]:
+        return ['shogo82148.com', '*.shogo82148.com', '*.acme.shogo82148.com']
+
+    @property
+    def cert_name(self) -> str:
+        return 'example.com'
 
     @property
     def email(self) -> str:
@@ -41,17 +46,18 @@ class Config:
         return 'arn:aws:sns:ap-northeast-1:445285296882:acme-cert-updater-test-UpdateTopic-141WK4DP5P40E'
 
 def test_certonly():
-    cfg = Config()
-    assert app.needs_init(cfg)
-    app.certonly(cfg)
+    try:
+        cfg = Config()
+        assert app.needs_init(cfg)
+        app.certonly(cfg)
 
-    assert not app.needs_init(cfg)
-    app.renew(cfg)
-
-    s3 = boto3.resource('s3') # pylint: disable=invalid-name
-    s3.Bucket(cfg.bucket_name).objects.filter(
-        Prefix=cfg.prefix+'/',
-    ).delete()
+        assert not app.needs_init(cfg)
+        app.renew(cfg)
+    finally:
+        s3 = boto3.resource('s3') # pylint: disable=invalid-name
+        s3.Bucket(cfg.bucket_name).objects.filter(
+            Prefix=cfg.prefix+'/',
+        ).delete()
 
 def test_notify():
     cfg = Config()

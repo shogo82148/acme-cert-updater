@@ -68,7 +68,6 @@ Resources:
 
   TestUserAccessKey:
     Type: AWS::IAM::AccessKey
-    DependsOn: TestUser
     Properties:
       Status: Active
       UserName: !Ref TestUser
