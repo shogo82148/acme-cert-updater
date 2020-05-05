@@ -28,7 +28,7 @@ Resources:
     Properties:
       Location:
         ApplicationId: arn:aws:serverlessrepo:us-east-1:445285296882:applications/acme-cert-updater
-        SemanticVersion: 0.0.15
+        SemanticVersion: 0.0.16
       Parameters: 
         # url for acme server
         # AcmeServer: https://acme-v02.api.letsencrypt.org/directory # Uncomment to override default value
