@@ -30,22 +30,42 @@ Resources:
         ApplicationId: arn:aws:serverlessrepo:us-east-1:445285296882:applications/acme-cert-updater
         SemanticVersion: 0.0.16
       Parameters: 
-        # url for acme server
-        # AcmeServer: https://acme-v02.api.letsencrypt.org/directory # Uncomment to override default value
-        # S3 bucket name for saving the certificates
+        # S3 bucket name for saving the certificates (required)
         BucketName: YOUR_BUCKET_NAME
-        # Comma separated list of domains to update the certificates
+
+        # Comma separated list of domains to update the certificates (required)
         Domains: YOUR_DOMAINS
-        # Email address
+
+        # the S3 key of certificate
+        # default: the first domain name of the Domains parameter
+        CertName: YOUR_DOMAINS
+
+        # Email address (required)
         Email: YOUR_EMAIL_ADDRESS
-        # execution environment
-        # Environment: production # Uncomment to override default value
-        # Amazon Route 53 Hosted Zone ID
+
+        # Amazon Route 53 Hosted Zone ID (required)
         HostedZone: YOUR_HOSTED_ZONE_ID
-        # The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
+
+        # The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events. (optional)
         Notification: ARN_SNS_TOPIC
-        # Prefix of objects on S3 bucket
-        # Prefix: ""  # Uncomment to override default value
+
+        # url for acme server
+        # default: https://acme-v02.api.letsencrypt.org/directory
+        AcmeServer: https://acme-v02.api.letsencrypt.org/directory
+
+        # execution environment
+        # allowed values: production, staging
+        # default: production
+        Environment: production
+
+        # Prefix of objects on S3 bucket.
+        # default: "" (no prefix)
+        Prefix: ""
+
+        # Log level
+        # allowed values: DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL
+        # default: ERROR
+        LogLevel: ERROR
 ```
 
 The following command will create a Cloudformation Stack and deploy the SAM resources.
