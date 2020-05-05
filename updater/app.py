@@ -23,8 +23,40 @@ import configobj
 # certificate name that certbot generates
 CERTNAME = 'acme-cert-updater'
 
+def log_level() -> int:
+    level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
+    if level == 'DEBUG':
+        return logging.DEBUG
+    if level == 'INFO':
+        return logging.INFO
+    if level == 'WARN':
+        return logging.WARN
+    if level == 'WARNING':
+        return logging.WARNING
+    if level == 'ERROR':
+        return logging.ERROR
+    if level == 'CRITICAL':
+        return logging.CRITICAL
+    raise ValueError("unknown log level " + level)
+
+def certbot_logging_flag() -> List[str]:
+    level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
+    if level == 'DEBUG':
+        return '-vvv'
+    if level == 'INFO':
+        return '-vv'
+    if level == 'WARN':
+        return '-v'
+    if level == 'WARNING':
+        return '-v'
+    if level == 'ERROR':
+        return '--quiet'
+    if level == 'CRITICAL':
+        return '--quiet'
+    raise ValueError("unknown log level " + level)
+
 # set up the logger
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=log_level())
 
 class Config:
     """configure of acme-cert-update"""
@@ -139,6 +171,7 @@ def certonly(config) -> None:
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
             '--cert-name', CERTNAME,
+            certbot_logging_flag(),
         ]
 
         for domain in config.domains:
@@ -176,6 +209,7 @@ def renew(config) -> None:
             '--config-dir', os.path.join(tmp, 'config-dir/'),
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
+            certbot_logging_flag(),
         ]
         if config.environment != 'production':
             # force renewal for testing
