@@ -80,7 +80,7 @@ aws cloudformation \
 ### Download the certificate
 
 [download-certificate.sh](https://github.com/shogo82148/acme-cert-updater/blob/master/download-certificate.sh) is a helper script for downloading the certificate.
-It downloads the certificate, and executes the given command if the certficate is renewal.
+It downloads the certificate, and executes the given command if the certificate is renewal.
 Here is an example for reloading nginx.
 
 ```
