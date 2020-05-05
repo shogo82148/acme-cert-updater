@@ -52,6 +52,10 @@ Parameters:
     Type: String
     Default: ""
     Description: The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events.
+  LogLevel:
+    Type: String
+    Default: ERROR
+    AllowedValues: [DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL]
 
 Conditions:
   HasNotification: !Not [ !Equals [ !Ref Notification, ""] ]
@@ -75,6 +79,7 @@ Resources:
             - HasNotification
             - !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
             - ""
+          UPDATER_LOG_LEVEL: !Ref LogLevel
       Timeout: 900
       Events:
         Update:
