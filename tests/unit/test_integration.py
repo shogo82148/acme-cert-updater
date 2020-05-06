@@ -50,9 +50,14 @@ class DummyConfig:
 
 class TestIntegration(unittest.TestCase):
     def setUp(self):
-        sts = boto3.client('sts')
-        identity = sts.get_caller_identity()
-        if identity['Account'] != AUTHOR_ACCOUNT:
+        identity = {}
+        try:
+            sts = boto3.client('sts')
+            identity = sts.get_caller_identity()
+        except:
+            self.skipTest("external resource not available")
+
+        if identity.get('Account') != AUTHOR_ACCOUNT:
             self.skipTest("external resource not available")
 
         self.__config = DummyConfig()
