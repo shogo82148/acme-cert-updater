@@ -270,6 +270,7 @@ def save_cert(config, tmp: str) -> None:
     certconfig = {
         'timestamp': now,
         'domain': config.cert_name, # for backward compatibility
+        'domains': config.domains,
         'cert_name': config.cert_name,
         'config': {
             'account': get_files(tmp, 'config-dir/accounts'),
@@ -291,7 +292,7 @@ def save_cert(config, tmp: str) -> None:
         Key=key,
         ContentType='application/json',
     )
-    notify(config, certconfig, key)
+    notify_renewed(config, certconfig, key)
 
 def load_cert(config, tmp: str) -> None:
     """download the certificate files from Amazon S3"""
@@ -381,26 +382,42 @@ def build_key(*segment) -> str:
     return path
 
 sns = boto3.client('sns') # pylint: disable=invalid-name
-def notify(config, certconfig: Dict[str, Union[str, Dict[str, str]]], key: str) -> None:
+def notify_renewed(config, certconfig: Dict[str, Union[str, Dict[str, str]]], key: str) -> None:
     """notify via SNS topic"""
     if config.notification == '':
         return
-    template = string.Template("""acme-cert-updater
-the certification is updated.
+    template = string.Template("""Notification from acme-cert-updater(https://github.com/shogo82148/acme-cert-updater).
+The following certificate is renewed.
 
-- domain: $domain
+- cert_name: $cert_name
+- domains: $domain
 - bucket: $bucket
 - object key: $key
+  - cert: $cert
+  - chain: $chain
+  - fullchain: $fullchain
+  - privkey: $privkey
 """)
     text_message = template.substitute(
-        domain=str(certconfig['domain']),
-        bucket=config.bucket_name,
-        key=key,
+        timestamp = certconfig['timestamp'],
+        domains = ', '.join(config.domains),
+        cert_name = config.cert_name,
+        bucket = config.bucket_name,
+        key = key,
+        cert = certconfig['cert']['cert'],
+        chain = certconfig['cert']['chain'],
+        fullchain = certconfig['cert']['fullchain'],
+        privkey = certconfig['cert']['privkey'],
     )
     json_message = json.dumps({
-        'domain': certconfig['domain'],
+        'type': 'renewed',
+        'timestamp': certconfig['timestamp'],
+        'domain': config.cert_name, # for backward compatibility
+        'domains': config.domains,
+        'cert_name': config.cert_name,
         'bucket': config.bucket_name,
         'key': key,
+        'cert': certconfig['cert'],
     })
     message = json.dumps({
         'default': json_message,

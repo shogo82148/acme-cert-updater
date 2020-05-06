@@ -77,11 +77,5 @@ class TestIntegration(unittest.TestCase):
         assert not app.needs_init(cfg)
         app.renew(cfg)
 
-    def test_notify(self):
-        cfg = self.__config
-        app.notify(cfg, {
-            'domain': 'shogo82148.com',
-        }, 'fooobar.json')
-
 if __name__ == '__main__':
     unittest.main()
