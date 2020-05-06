@@ -20,9 +20,6 @@ from botocore.exceptions import ClientError
 import certbot.main
 import configobj
 
-# certificate name that certbot generates
-CERTNAME = 'acme-cert-updater'
-
 def log_level() -> int:
     level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
     if level == 'DEBUG':
@@ -170,7 +167,7 @@ def certonly(config) -> None:
             '--config-dir', os.path.join(tmp, 'config-dir/'),
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
-            '--cert-name', CERTNAME,
+            '--cert-name', config.cert_name,
             certbot_logging_flag(),
         ]
 
@@ -228,7 +225,7 @@ def save_cert(config, tmp: str) -> None:
     """upload the certificate files to Amazon S3"""
     bucket = s3.Bucket(config.bucket_name)
     now = datetime.utcnow().isoformat()
-    live = os.path.join(tmp, 'config-dir/live/', CERTNAME)
+    live = os.path.join(tmp, 'config-dir/live/', config.cert_name)
     for filename in ['cert.pem', 'chain.pem', 'fullchain.pem', 'privkey.pem']:
         bucket.upload_file(
             os.path.join(live, filename),
@@ -243,7 +240,7 @@ def save_cert(config, tmp: str) -> None:
             'account': get_files(tmp, 'config-dir/accounts'),
             'csr': get_files(tmp, 'config-dir/csr'),
             'keys': get_files(tmp, 'config-dir/keys'),
-            'renewal': get_renewal_config(tmp, CERTNAME),
+            'renewal': get_renewal_config(tmp, config.cert_name),
         },
         'cert': {
             'cert': build_key(config.prefix, config.cert_name, now, 'cert.pem'),
@@ -268,9 +265,9 @@ def load_cert(config, tmp: str) -> None:
     set_files(tmp, 'config-dir/accounts/', certconfig['config']['account'])
     set_files(tmp, 'config-dir/csr/', certconfig['config']['csr'])
     set_files(tmp, 'config-dir/keys/', certconfig['config']['keys'])
-    set_renewal_config(tmp, CERTNAME, certconfig['config']['renewal'])
+    set_renewal_config(tmp, config.cert_name, certconfig['config']['renewal'])
 
-    archive = os.path.join(tmp, 'config-dir', 'archive', CERTNAME)
+    archive = os.path.join(tmp, 'config-dir', 'archive', config.cert_name)
     pathlib.Path(archive).mkdir(parents=True, exist_ok=True)
     cert = certconfig['cert']
     bucket.download_file(cert['cert'], os.path.join(archive, 'cert1.pem'))
@@ -278,7 +275,7 @@ def load_cert(config, tmp: str) -> None:
     bucket.download_file(cert['fullchain'], os.path.join(archive, 'fullchain1.pem'))
     bucket.download_file(cert['privkey'], os.path.join(archive, 'privkey1.pem'))
 
-    live = os.path.join(tmp, 'config-dir', 'live', CERTNAME)
+    live = os.path.join(tmp, 'config-dir', 'live', config.cert_name)
     pathlib.Path(live).mkdir(parents=True, exist_ok=True)
     os.symlink(os.path.join(archive, 'cert1.pem'), os.path.join(live, 'cert.pem'))
     os.symlink(os.path.join(archive, 'chain1.pem'), os.path.join(live, 'chain.pem'))
