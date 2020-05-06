@@ -17,8 +17,11 @@ from unittest import mock
 import logging
 import boto3
 from botocore.exceptions import ClientError
+import importlib
 import certbot.main
 import configobj
+
+logger = logging.getLogger(__name__)
 
 def log_level() -> int:
     level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
@@ -127,33 +130,6 @@ class Config:
         """The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events."""
         return os.environ.get('UPDATER_NOTIFICATION', '')
 
-class mock_atexit:
-    """patch certbot.util.atexit"""
-
-    def __init__(self):
-        patch = mock.patch("certbot.util.atexit")
-        self._patch = patch
-        self._func = []
-
-    def register(self, func, *args, **kwargs):
-        """register dummy atexit"""
-        self._func.append([func, args, kwargs])
-
-    def atexit_call(self):
-        """call atexit functions"""
-        for func, args, kwargs in reversed(self._func):
-            func(*args, **kwargs)
-        self._func = []
-
-    def __enter__(self):
-        result = self._patch.start()
-        register = result.register
-        register.side_effect = self.register
-        return self
-
-    def __exit__(self, ex_type, ex_value, trace):
-        self._patch.stop()
-        self.atexit_call()
 
 def certonly(config) -> None:
     """get new certificate"""
@@ -181,9 +157,7 @@ def certonly(config) -> None:
         else:
             input_array.append('--staging')
 
-        with mock_atexit():
-            certbot.main.main(input_array)
-
+        certbot_main(input_array)
         save_cert(config, tmp)
 
 def renew(config) -> None:
@@ -214,11 +188,66 @@ def renew(config) -> None:
             # connect to the staging environment
             input_array.append('--staging')
 
-        with mock_atexit():
-            certbot.main.main(input_array)
-
+        certbot_main(input_array)
         if flag.exists():
             save_cert(config, tmp)
+
+class mock_atexit:
+    """patch certbot.util.atexit"""
+
+    def __init__(self):
+        patch = mock.patch("certbot.util.atexit")
+        self._patch = patch
+        self._func = []
+
+    def register(self, func, *args, **kwargs):
+        """register dummy atexit"""
+        self._func.append([func, args, kwargs])
+
+    def atexit_call(self):
+        """call atexit functions"""
+        for func, args, kwargs in reversed(self._func):
+            func(*args, **kwargs)
+        self._func = []
+
+    def __enter__(self):
+        result = self._patch.start()
+        register = result.register
+        register.side_effect = self.register
+        return self
+
+    def __exit__(self, ex_type, ex_value, trace):
+        self._patch.stop()
+        self.atexit_call()
+
+
+class save_log_handler:
+    def __init__(self):
+        self._root_logger = logging.getLogger()
+        self._handler = []
+
+    def __enter__(self):
+        self._handler = list(self._root_logger.handlers)
+
+    def __exit__(self, ex_type, ex_value, trace):
+        extra_handlers = []
+        for handler in self._root_logger.handlers:
+            if handler not in self._handler:
+                extra_handlers.append(handler)
+        for handler in extra_handlers:
+            self._root_logger.removeHandler(handler)
+
+def certbot_main(args: List[str]) -> None:
+    """
+    certbot_main is a wrapper of certbot.main.main.
+    certbot.main.main overwrites the global configures,
+    so certbot_main save and restore them.
+    """
+
+    with save_log_handler():
+        with mock_atexit():
+            certbot.main.main(args)
+
 
 s3 = boto3.resource('s3') # pylint: disable=invalid-name
 def save_cert(config, tmp: str) -> None:
