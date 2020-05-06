@@ -66,19 +66,22 @@ class Config:
         domains = event.get('domains', '')
         if isinstance(domains, str):
             # the domains field is comma separated string
-            self.__domains = [domain.strip().lower() for domain in domains.split(',')]
+            self.__domains = domains.split(',')
         elif isinstance(domains, List):
-            self.__domains = [domain.strip().lower() for domain in domains]
+            self.__domains = domains
         else:
             raise ValueError("invalid domains")
-
-        if len(self.__domains) == 0:
-            self.__cert_name = ''
-            return
+        self.__domains = [
+            domain.strip().lower() for domain in self.__domains
+                if isinstance(domain, str) and domain.strip() != ''
+        ]
 
         cert_name = event.get('cert_name', '')
         if cert_name == '':
-            self.__cert_name = Config._trim_wildcard(self.__domains[0])
+            if len(self.__domains) > 0:
+                self.__cert_name = Config._trim_wildcard(self.__domains[0])
+            else:
+                self.__cert_name = ''
         else:
             self.__cert_name = cert_name.lower()
 
