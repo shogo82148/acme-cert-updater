@@ -10,6 +10,7 @@ import pathlib
 import json
 import string
 import tempfile
+import traceback
 from datetime import datetime
 from typing import Dict, Union, List
 from unittest import mock
@@ -390,7 +391,7 @@ def notify_renewed(config, certconfig: Dict[str, Union[str, Dict[str, str]]], ke
 The following certificate is renewed.
 
 - cert_name: $cert_name
-- domains: $domain
+- domains: $domains
 - bucket: $bucket
 - object key: $key
   - cert: $cert
@@ -429,6 +430,39 @@ The following certificate is renewed.
         MessageStructure="json",
     )
 
+def notify_failed(config, err) -> None:
+    """notify via SNS topic"""
+    if config.notification == '':
+        return
+    template = string.Template("""Notification from acme-cert-updater(https://github.com/shogo82148/acme-cert-updater).
+Certificate renewal is failed.
+
+- cert_name: $cert_name
+- domains: $domains
+
+Exception:
+$err
+""")
+    text_message = template.substitute(
+        domains = ', '.join(config.domains),
+        cert_name = config.cert_name,
+        err = err,
+    )
+    json_message = json.dumps({
+        'type': 'failed',
+        'domains': config.domains,
+        'cert_name': config.cert_name,
+    })
+    message = json.dumps({
+        'default': json_message,
+        'email': text_message,
+    })
+    sns.publish(
+        TopicArn=config.notification,
+        Message=message,
+        MessageStructure="json",
+    )
+
 def needs_init(config) -> bool:
     """check initialize is required"""
     bucket_name = config.bucket_name
@@ -450,16 +484,21 @@ def lambda_handler(event, context): # pylint: disable=unused-argument
         # nothing to do
         return {}
 
-    if needs_init(config):
-        try:
-            logger.debug('update the certificate.')
-            certonly(config)
-        except:
-            logger.debug('updating failed. fall back to request new certificate.')
+    try:
+        if needs_init(config):
+            try:
+                logger.debug('update the certificate.')
+                certonly(config)
+            except:
+                logger.debug('updating failed. fall back to request new certificate.')
+                renew(config)
+        else:
+            logger.debug('request new certificate.')
             renew(config)
-    else:
-        logger.debug('request new certificate.')
-        renew(config)
+    except:
+        notify_failed(config, traceback.format_exc())
+        raise
+
     return {}
 
 if __name__ == "__main__":

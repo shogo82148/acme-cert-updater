@@ -2,6 +2,7 @@
 
 import unittest
 import secrets
+import traceback
 
 import boto3
 from typing import List
@@ -76,6 +77,13 @@ class TestIntegration(unittest.TestCase):
 
         assert not app.needs_init(cfg)
         app.renew(cfg)
+
+    def test_notify_failed(self):
+        try:
+            raise Exception("some error")
+        except:
+            app.notify_failed(self.__config, traceback.format_exc())
+
 
 if __name__ == '__main__':
     unittest.main()
