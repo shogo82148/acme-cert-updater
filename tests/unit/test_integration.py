@@ -1,5 +1,6 @@
 """tests of acme-cert-updater"""
 
+import unittest
 import secrets
 
 import boto3
@@ -8,7 +9,9 @@ from updater import app
 
 # pylint: disable=missing-docstring
 
-class Config:
+AUTHOR_ACCOUNT = '445285296882'
+
+class DummyConfig:
     def __init__(self):
         self._prefix = secrets.token_hex(16)
 
@@ -45,22 +48,35 @@ class Config:
         # pylint: disable=line-too-long
         return 'arn:aws:sns:ap-northeast-1:445285296882:acme-cert-updater-test-UpdateTopic-141WK4DP5P40E'
 
-def test_certonly():
-    try:
-        cfg = Config()
-        assert app.needs_init(cfg)
-        app.certonly(cfg)
+class TestIntegration(unittest.TestCase):
+    def setUp(self):
+        sts = boto3.client('sts')
+        identity = sts.get_caller_identity()
+        if identity['Account'] != AUTHOR_ACCOUNT:
+            self.skipTest("external resource not available")
 
-        assert not app.needs_init(cfg)
-        app.renew(cfg)
-    finally:
+        self.__config = DummyConfig()
+    
+    def tearDown(self):
+        cfg = self.__config
         s3 = boto3.resource('s3') # pylint: disable=invalid-name
         s3.Bucket(cfg.bucket_name).objects.filter(
             Prefix=cfg.prefix+'/',
         ).delete()
 
-def test_notify():
-    cfg = Config()
-    app.notify(cfg, {
-        'domain': 'shogo82148.com',
-    }, 'fooobar.json')
+    def test_certonly(self):
+        cfg = self.__config
+        assert app.needs_init(cfg)
+        app.certonly(cfg)
+
+        assert not app.needs_init(cfg)
+        app.renew(cfg)
+
+    def test_notify(self):
+        cfg = self.__config
+        app.notify(cfg, {
+            'domain': 'shogo82148.com',
+        }, 'fooobar.json')
+
+if __name__ == '__main__':
+    unittest.main()
