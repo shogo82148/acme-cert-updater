@@ -252,10 +252,13 @@ def certbot_main(args: List[str]) -> None:
 s3 = boto3.resource('s3') # pylint: disable=invalid-name
 def save_cert(config, tmp: str) -> None:
     """upload the certificate files to Amazon S3"""
+    bucket_name = config.bucket_name
+    key = build_key(config.prefix, config.cert_name + '.json')
     bucket = s3.Bucket(config.bucket_name)
     now = datetime.utcnow().isoformat()
     live = os.path.join(tmp, 'config-dir/live/', config.cert_name)
     for filename in ['cert.pem', 'chain.pem', 'fullchain.pem', 'privkey.pem']:
+        logger.debug(f'uploading {filename}')
         bucket.upload_file(
             os.path.join(live, filename),
             build_key(config.prefix, config.cert_name, now, filename),
@@ -278,17 +281,22 @@ def save_cert(config, tmp: str) -> None:
             'privkey': build_key(config.prefix, config.cert_name, now, 'privkey.pem'),
         },
     }
+
+    logger.debug(f'uploading the certificate information to s3://{bucket_name}/{key}')
     bucket.put_object(
         Body=json.dumps(certconfig),
-        Key=build_key(config.prefix, config.cert_name + '.json'),
+        Key=key,
         ContentType='application/json',
     )
-    notify(config, certconfig, build_key(config.prefix, config.cert_name + '.json'))
+    notify(config, certconfig, key)
 
 def load_cert(config, tmp: str) -> None:
-    """upload the certificate files to Amazon S3"""
-    bucket = s3.Bucket(config.bucket_name)
-    obj = bucket.Object(build_key(config.prefix, config.cert_name + '.json'))
+    """download the certificate files from Amazon S3"""
+    bucket_name = config.bucket_name
+    key = build_key(config.prefix, config.cert_name + '.json')
+    logger.debug(f'downloading the certificate from s3://{bucket_name}/{key}')
+    bucket = s3.Bucket(bucket_name)
+    obj = bucket.Object(key)
     certconfig = json.load(obj.get()['Body'])
 
     set_files(tmp, 'config-dir/accounts/', certconfig['config']['account'])
@@ -403,8 +411,11 @@ the certification is updated.
 
 def needs_init(config) -> bool:
     """check initialize is required"""
-    bucket = s3.Bucket(config.bucket_name)
-    obj = bucket.Object(build_key(config.prefix, config.cert_name + '.json'))
+    bucket_name = config.bucket_name
+    key = build_key(config.prefix, config.cert_name + '.json')
+    logger.debug(f'checking s3://{bucket_name}/{key} exists.')
+    bucket = s3.Bucket(bucket_name)
+    obj = bucket.Object(key)
     try:
         obj.load()
     except ClientError:
@@ -420,8 +431,14 @@ def lambda_handler(event, context): # pylint: disable=unused-argument
         return {}
 
     if needs_init(config):
-        certonly(config)
+        try:
+            logger.debug('update the certificate.')
+            certonly(config)
+        except:
+            logger.debug('updating failed. fall back to request new certificate.')
+            renew(config)
     else:
+        logger.debug('request new certificate.')
         renew(config)
     return {}
 
