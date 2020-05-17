@@ -22,9 +22,6 @@ import importlib
 import certbot.main
 import configobj
 
-logger = logging.getLogger(__name__)
-logging.getLogger().setLevel(log_level())
-
 def log_level() -> int:
     level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
     if level == 'DEBUG':
@@ -40,6 +37,9 @@ def log_level() -> int:
     if level == 'CRITICAL':
         return logging.CRITICAL
     raise ValueError("unknown log level " + level)
+
+logger = logging.getLogger(__name__)
+logging.getLogger().setLevel(log_level())
 
 class Config:
     """configure of acme-cert-update"""
