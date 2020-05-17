@@ -36,6 +36,8 @@ def log_level() -> int:
         return logging.ERROR
     if level == 'CRITICAL':
         return logging.CRITICAL
+    if level == 'FATAL':
+        return logging.FATAL
     raise ValueError("unknown log level " + level)
 
 logger = logging.getLogger(__name__)
@@ -132,6 +134,10 @@ def certonly(config) -> None:
             '--cert-name', config.cert_name,
         ]
 
+        # disable the report
+        if log_level() >= logging.WARNING:
+            input_array.append('--quiet')
+
         for domain in config.domains:
             input_array.append('--domains')
             input_array.append(domain)
@@ -171,6 +177,10 @@ def renew(config) -> None:
             input_array.append('--force-renewal')
             # connect to the staging environment
             input_array.append('--staging')
+
+        # disable the report
+        if log_level() >= logging.WARNING:
+            input_array.append('--quiet')
 
         certbot_main(input_array)
         if flag.exists():
@@ -212,7 +222,7 @@ def certbot_main(args: List[str]) -> None:
     """
 
     with mock_atexit():
-        # disable certbot custom log handler.
+        # disable certbot custom log handlers.
         with mock.patch("certbot._internal.log.pre_arg_parse_setup"):
             with mock.patch("certbot._internal.log.post_arg_parse_setup"):
 
