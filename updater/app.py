@@ -23,6 +23,7 @@ import certbot.main
 import configobj
 
 logger = logging.getLogger(__name__)
+logging.getLogger().setLevel(log_level())
 
 def log_level() -> int:
     level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
@@ -39,25 +40,6 @@ def log_level() -> int:
     if level == 'CRITICAL':
         return logging.CRITICAL
     raise ValueError("unknown log level " + level)
-
-def certbot_logging_flag() -> List[str]:
-    level = os.environ.get('UPDATER_LOG_LEVEL', 'ERROR')
-    if level == 'DEBUG':
-        return '-vvv'
-    if level == 'INFO':
-        return '-vv'
-    if level == 'WARN':
-        return '-v'
-    if level == 'WARNING':
-        return '-v'
-    if level == 'ERROR':
-        return '--quiet'
-    if level == 'CRITICAL':
-        return '--quiet'
-    raise ValueError("unknown log level " + level)
-
-# set up the logger
-logging.basicConfig(level=log_level())
 
 class Config:
     """configure of acme-cert-update"""
@@ -148,7 +130,6 @@ def certonly(config) -> None:
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
             '--cert-name', config.cert_name,
-            certbot_logging_flag(),
         ]
 
         for domain in config.domains:
@@ -184,7 +165,6 @@ def renew(config) -> None:
             '--config-dir', os.path.join(tmp, 'config-dir/'),
             '--work-dir', os.path.join(tmp, 'word-dir/'),
             '--logs-dir', os.path.join(tmp, 'logs-dir/'),
-            certbot_logging_flag(),
         ]
         if config.environment != 'production':
             # force renewal for testing
@@ -224,23 +204,6 @@ class mock_atexit:
         self._patch.stop()
         self.atexit_call()
 
-
-class save_log_handler:
-    def __init__(self):
-        self._root_logger = logging.getLogger()
-        self._handler = []
-
-    def __enter__(self):
-        self._handler = list(self._root_logger.handlers)
-
-    def __exit__(self, ex_type, ex_value, trace):
-        extra_handlers = []
-        for handler in self._root_logger.handlers:
-            if handler not in self._handler:
-                extra_handlers.append(handler)
-        for handler in extra_handlers:
-            self._root_logger.removeHandler(handler)
-
 def certbot_main(args: List[str]) -> None:
     """
     certbot_main is a wrapper of certbot.main.main.
@@ -248,9 +211,13 @@ def certbot_main(args: List[str]) -> None:
     so certbot_main save and restore them.
     """
 
-    with save_log_handler():
-        with mock_atexit():
-            certbot.main.main(args)
+    with mock_atexit():
+        # disable certbot custom log handler.
+        with mock.patch("certbot._internal.log.pre_arg_parse_setup"):
+            with mock.patch("certbot._internal.log.post_arg_parse_setup"):
+
+                # call main function
+                certbot.main.main(args)
 
 
 s3 = boto3.resource('s3') # pylint: disable=invalid-name
