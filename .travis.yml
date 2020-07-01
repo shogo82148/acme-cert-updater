@@ -11,9 +11,9 @@ install:
 
   # install homebrew
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-linux.html
-  - sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-  - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-  - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv) || true
+  - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) || true
   - brew --version
 
   # install aws-sam-cli
