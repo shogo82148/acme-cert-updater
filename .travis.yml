@@ -4,6 +4,22 @@ python:
   - '3.8'
 
 install:
+  # install aws cli v2
+  - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  - unzip awscliv2.zip
+  - sudo ./aws/install
+
+  # install homebrew
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-linux.html
+  - sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+  - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+  - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+  - brew --version
+
+  # install aws-sam-cli
+  - brew tap aws/tap
+  - brew install aws-sam-cli
+
   - pip install pipenv
   - pipenv install --dev
 
