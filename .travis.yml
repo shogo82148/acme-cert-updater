@@ -28,4 +28,4 @@ install:
 script:
   - make test
   - make validate
-  - make build
+  - make build || sudo journalctl -u docker.service
