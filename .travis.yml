@@ -25,7 +25,11 @@ install:
   - pip install pipenv
   - pipenv install --dev
 
+  # workaround for failing `sam build --use-container`
+  # https://github.com/shogo82148/acme-cert-updater/pull/56
+  - docker pull amazon/aws-sam-cli-build-image-python3.8
+
 script:
   - make test
   - make validate
-  - make build || sudo journalctl -u docker.service
+  - make build || { sudo journalctl -u docker.service; false }
