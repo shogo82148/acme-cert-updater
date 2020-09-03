@@ -1,7 +1,9 @@
-dist: xenial
+dist: bionic
 language: python
 python:
-  - '3.8'
+  - "3.8"
+services:
+  - docker
 
 install:
   # install aws cli v2
@@ -9,19 +11,14 @@ install:
   - unzip awscliv2.zip
   - sudo ./aws/install
 
-  # install homebrew
-  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-linux.html
-  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv) || true
-  - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) || true
-  - brew --version
-
-  # install aws-sam-cli
-  - brew tap aws/tap
-  - brew install aws-sam-cli
+  - pip install aws-sam-cli
 
   - pip install pipenv
   - pipenv install --dev
+
+  # workaround for failing `sam build --use-container`
+  # https://github.com/shogo82148/acme-cert-updater/pull/56
+  - docker pull amazon/aws-sam-cli-build-image-python3.8
 
 script:
   - make test

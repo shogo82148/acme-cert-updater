@@ -6,7 +6,7 @@ help: ## Show this text.
 
 build: ## Build SAM application.
 	pipenv lock -r > updater/requirements.txt
-	sam build --use-container
+	sam build --use-container --debug
 	cp README.md .aws-sam/build/
 	cp LICENSE .aws-sam/build/
 
