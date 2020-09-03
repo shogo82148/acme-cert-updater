@@ -11,16 +11,7 @@ install:
   - unzip awscliv2.zip
   - sudo ./aws/install
 
-  # install homebrew
-  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-linux.html
-  - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv) || true
-  - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) || true
-  - brew --version
-
-  # install aws-sam-cli
-  - brew tap aws/tap
-  - brew install --build-from-source aws-sam-cli
+  - pip install aws-sam-cli
 
   - pip install pipenv
   - pipenv install --dev
