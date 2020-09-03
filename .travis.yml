@@ -32,4 +32,4 @@ install:
 script:
   - make test
   - make validate
-  - make build || { sudo journalctl -u docker.service; false }
+  - make build
