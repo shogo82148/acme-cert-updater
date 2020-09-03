@@ -17,6 +17,7 @@ install:
   - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv) || true
   - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) || true
   - brew --version
+  - brew shellenv
 
   # install aws-sam-cli
   - brew tap aws/tap
