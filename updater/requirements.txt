@@ -30,7 +30,7 @@ urllib3==1.25.10 ; python_version != '3.4'
 zope.component==4.6.2
 zope.deferredimport==4.3.1
 zope.deprecation==4.4.0
-zope.event==4.4
+zope.event==4.5.0
 zope.hookable==5.0.1
 zope.interface==5.1.0
 zope.proxy==4.3.5
