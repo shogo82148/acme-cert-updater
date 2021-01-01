@@ -41,11 +41,11 @@
         },
         "certbot": {
             "hashes": [
-                "sha256:5d79bd451756112a7db2cdb25d193de9baf3df85211ed9587685be32b779bbfc",
-                "sha256:b4f3d73c440d09a95346991bf7cf80870baf37dcf4865f3766dc43bc35d2c9a6"
+                "sha256:011ac980fa21b9f29e02c9b8d8b86e8a4bf4670b51b6ad91656e401e9d2d2231",
+                "sha256:0d9ee3fc09e0d03b2d1b1f1c4916e61ecfc6904b4216ddef4e6a5ca1424d9cb7"
             ],
             "index": "pypi",
-            "version": "==1.10.0"
+            "version": "==1.10.1"
         },
         "certbot-dns-route53": {
             "hashes": [
