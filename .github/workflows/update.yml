@@ -1,0 +1,44 @@
+name: update
+on:
+  schedule:
+    - cron: "53 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  requirements:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.SHOGO_GITHUB_TOKEN }}
+
+      - name: update
+        id: update
+        run: |
+          pip install --upgrade pip
+          pip install pipenv
+          pipenv update --dev
+          pipenv lock -r > updater/requirements_new.txt
+
+          # boto3 and botocore are updated very often, so ignore them
+          diff <(cat updater/requirements.txt | grep -v -E 'boto(3|core)') \
+            <(cat updater/requirements_new.txt | grep -v -E 'boto(3|core)') && true
+          echo "::set-output name=result::$?"
+
+      - name: commit
+        if: steps.update.outputs.result == '1'
+        env:
+          GITHUB_TOKEN: ${{ secrets.SHOGO_GITHUB_TOKEN }}
+        run: |
+          branch=update-requirements-$(date +"%Y-%m-%d-%H-%M-%S")
+          git config --global user.name "Ichinose Shogo"
+          git config --global user.email shogo82148@gmail.com
+          git switch -c "$branch"
+          mv updater/requirements_new.txt updater/requirements.txt
+          git add .
+          git commit -m "Update requirements.txt $(date +"%Y-%m-%d %H:%M:%S")"
+          git push -u origin $branch
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+            -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "main", "head": $branch }')" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
