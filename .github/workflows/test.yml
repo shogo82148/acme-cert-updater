@@ -22,6 +22,7 @@ jobs:
           sudo ./aws/install
       - name: install dependencies
         run: |
+          pip install --upgrade pip
           pip install aws-sam-cli
           pip install pipenv
           pipenv install --dev
