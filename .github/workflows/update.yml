@@ -13,6 +13,10 @@ jobs:
         with:
           token: ${{ secrets.SHOGO_GITHUB_TOKEN }}
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
       - name: update
         id: update
         run: |
