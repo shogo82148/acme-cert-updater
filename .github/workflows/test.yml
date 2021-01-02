@@ -26,6 +26,7 @@ jobs:
           pip install pipenv
           pipenv install --dev
       
+      - uses: shogo82148/actions-mutex
       - name: test
         run: |
           make test
