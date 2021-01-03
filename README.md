@@ -1,6 +1,6 @@
 # acme-cert-updater
 
-[![Build Status](https://travis-ci.com/shogo82148/acme-cert-updater.svg?branch=master)](https://travis-ci.com/shogo82148/acme-cert-updater)
+![test](https://github.com/shogo82148/acme-cert-updater/workflows/test/badge.svg)
 
 The acme-cert-updater automatically updates the certificate using ACME (Automated Certificate Management Environment) and Amazon Route 53.
 It is a pre-build AWS Serverless Application of [Certbot](https://certbot.eff.org/) with [certbot-dns-route53](https://certbot-dns-route53.readthedocs.io/en/stable/) plugin.
