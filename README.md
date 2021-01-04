@@ -28,7 +28,7 @@ Resources:
     Properties:
       Location:
         ApplicationId: arn:aws:serverlessrepo:us-east-1:445285296882:applications/acme-cert-updater
-        SemanticVersion: 0.0.22
+        SemanticVersion: 0.0.23
       Parameters:
         # S3 bucket name for saving the certificates (required)
         BucketName: YOUR_BUCKET_NAME
