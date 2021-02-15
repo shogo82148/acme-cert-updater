@@ -115,9 +115,9 @@
         },
         "configargparse": {
             "hashes": [
-                "sha256:edd17be986d5c1ba2e307150b8e5f5107aba125f3574dddd02c85d5cdcfd37dc"
+                "sha256:0428b975ab6c48bb101ccb732e1b5cb616296e28268e032aa806f32b647a1cc1"
             ],
-            "version": "==1.2.3"
+            "version": "==1.3"
         },
         "configobj": {
             "hashes": [
