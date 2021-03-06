@@ -7,23 +7,16 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
-
-      - name: install aws cli v2
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
+          python-version: "3.8"
       - name: install dependencies
         run: |
           pip install --upgrade pip
-          pip install aws-sam-cli
           pip install pipenv
           pipenv install --dev
 
@@ -33,7 +26,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-      
+
       - uses: shogo82148/actions-mutex@v1
       - name: test
         run: |
