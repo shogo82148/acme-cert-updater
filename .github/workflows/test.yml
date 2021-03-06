@@ -11,10 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -25,6 +21,6 @@ jobs:
       - uses: shogo82148/actions-mutex@v1
       - name: test
         run: |
-          pipenv run make test
-          pipenv run make validate
-          pipenv run make build
+          make test
+          make validate
+          make build
