@@ -13,6 +13,75 @@ Resources:
     Properties:
       BucketName: shogo82148-acme-cert-updater-test
 
+  TestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::053160724612:root
+            Action:
+              - 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                "sts:ExternalId": shogo82148/acme-cert-updater
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::053160724612:root
+            Action:
+              - 'sts:TagSession'
+      Policies:
+        - PolicyName: sns
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "sns:Publish"
+                Resource:
+                  - !Ref UpdateTopic
+        - PolicyName: s3
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                Resource:
+                  - !GetAtt TestBucket.Arn
+                  - !Sub "${TestBucket.Arn}/*"
+        - PolicyName: route53
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "route53:ListHostedZones"
+                  - "route53:GetChange"
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - route53:ChangeResourceRecordSets
+                Resource:
+                  - arn:aws:route53:::hostedzone/Z1TR8BQNS8S1I7
+        - PolicyName: sam-validation
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:Validate"
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - iam:ListPolicies
+                Resource:
+                  - "*"
+
   TestUser:
     Type: AWS::IAM::User
     Properties:
