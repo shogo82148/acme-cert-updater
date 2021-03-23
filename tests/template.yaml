@@ -73,7 +73,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "cloudformation:Validate"
+                  - "cloudformation:ValidateTemplate"
                 Resource:
                   - "*"
               - Effect: Allow
