@@ -13,9 +13,25 @@ Resources:
     Properties:
       BucketName: shogo82148-acme-cert-updater-test
 
-  TestUser:
-    Type: AWS::IAM::User
+  TestRole:
+    Type: AWS::IAM::Role
     Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::053160724612:root
+            Action:
+              - 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                "sts:ExternalId": shogo82148/acme-cert-updater
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::053160724612:root
+            Action:
+              - 'sts:TagSession'
       Policies:
         - PolicyName: sns
           PolicyDocument:
@@ -57,7 +73,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "cloudformation:Validate"
+                  - "cloudformation:ValidateTemplate"
                 Resource:
                   - "*"
               - Effect: Allow
@@ -66,14 +82,6 @@ Resources:
                 Resource:
                   - "*"
 
-  TestUserAccessKey:
-    Type: AWS::IAM::AccessKey
-    Properties:
-      Status: Active
-      UserName: !Ref TestUser
-
 Outputs:
-  AccessKey:
-    Value: !Ref TestUserAccessKey
-  SecretAccessKey:
-    Value: !GetAtt TestUserAccessKey.SecretAccessKey
+  Role:
+    Value: !Ref TestRole
