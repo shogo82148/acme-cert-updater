@@ -5,6 +5,7 @@ on:
       - main
   pull_request:
 
+concurrency: integration-test
 jobs:
   test:
     runs-on: ubuntu-20.04
@@ -27,7 +28,6 @@ jobs:
           role-to-assume: arn:aws:iam::445285296882:role/acme-cert-updater-test-TestRole-SPRNY1U43M59
           role-session-tagging: true
 
-      - uses: shogo82148/actions-mutex@v1
       - name: test
         run: |
           pipenv run make test
