@@ -7,14 +7,14 @@
 
 -i https://pypi.org/simple
 acme==1.15.0; python_version >= '3.6'
-boto3==1.17.67
-botocore==1.20.67
+boto3==1.17.70
+botocore==1.20.70
 certbot-dns-route53==1.15.0
 certbot==1.15.0
 certifi==2020.12.5
 cffi==1.14.5
 chardet==4.0.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
-configargparse==1.4
+configargparse==1.4.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 configobj==5.0.6
 cryptography==3.4.7; python_version >= '3.6'
 distro==1.5.0
