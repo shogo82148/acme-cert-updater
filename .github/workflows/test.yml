@@ -5,7 +5,10 @@ on:
       - main
   pull_request:
 
-concurrency: integration-test
+concurrency:
+  group: integration-test
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-20.04
