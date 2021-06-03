@@ -25,7 +25,7 @@ jobs:
           pipenv install --dev
 
       - name: Configure AWS Credentials
-        uses: shogo82148/actions-aws-assume-role@v1
+        uses: fuller-inc/actions-aws-assume-role@v1
         with:
           aws-region: ap-northeast-1
           role-to-assume: arn:aws:iam::445285296882:role/acme-cert-updater-test-TestRole-SPRNY1U43M59
