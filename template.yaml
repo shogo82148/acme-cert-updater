@@ -58,6 +58,26 @@ Parameters:
     AllowedValues: [DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL]
 
 Conditions:
+  # NOTE: check whether Notification is an ARN.
+  # for backward compatibility, we should accept a topic name.
+  #
+  # If Notification is an ARN, e.g. "arn:aws:sns:us-east-1:123456789012:my-topic":
+  #   `!Join [ "", !Split [ "arn:", !Ref Notification ] ]` is "aws:sns:us-east-1:123456789012:my-topic"
+  #   As a result, IsNotificationArn will be **false** because "arn:aws:sns:us-east-1:123456789012:my-topic" != "aws:sns:us-east-1:123456789012:my-topic"
+  #
+  # If Notification is a topic name, e.g. "my-topic":
+  #   `!Join [ "", !Split [ "arn:", !Ref Notification ] ]` is "my-topic"
+  #   As a result, IsNotificationArn will be **false** because "my-topic" == "my-topic"
+  #
+  # it works because topic names can't contain ":"
+  # ref. https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-topicname
+  # > Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens,
+  # > and must be between 1 and 256 characters long.
+  IsNotificationArn: !Not
+    - !Equals
+      - !Join [ "", !Split [ "arn:", !Ref Notification ] ] # remove "arn:" in Notification
+      - !Ref Notification
+
   HasNotification: !Not [!Equals [!Ref Notification, ""]]
 
 Resources:
@@ -75,9 +95,12 @@ Resources:
           UPDATER_ENVIRONMENT: !Ref Environment
           UPDATER_ACME_SERVER: !Ref AcmeServer
           UPDATER_NOTIFICATION: !If
-            - HasNotification
-            - !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
-            - ""
+            - IsNotificationArn
+            - !Ref Notification
+            - !If
+              - HasNotification
+              - !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${Notification}
+              - ""
           UPDATER_LOG_LEVEL: !Ref LogLevel
       Timeout: 900
       Events:
