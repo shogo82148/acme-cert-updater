@@ -165,6 +165,7 @@ def renew(config) -> None:
         input_array = [
             'renew',
             '--noninteractive',
+            '--no-random-sleep-on-renew',
             '--agree-tos',
             '--email', config.email,
             '--dns-route53',
