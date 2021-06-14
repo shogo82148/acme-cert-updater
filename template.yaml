@@ -128,6 +128,12 @@ Resources:
               Resource:
                 - !Sub arn:aws:route53:::hostedzone/${HostedZone}
 
+  Certificate:
+    Type: Custom::Certificate
+    Properties:
+      ServiceToken: !GetAtt AcmeCertUpdater.Arn
+      Input: !Sub '{"domains":"${Domains}","cert_name":"${CertName}"}'
+
 Outputs:
   Arn:
     Description: the arn of updater AWS Lambda function
