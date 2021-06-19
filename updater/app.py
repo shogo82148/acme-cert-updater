@@ -11,6 +11,7 @@ import json
 import string
 import tempfile
 import traceback
+import urllib.request
 from datetime import datetime
 from typing import Dict, Union, List
 from unittest import mock
@@ -18,7 +19,6 @@ from unittest import mock
 import logging
 import boto3
 from botocore.exceptions import ClientError
-import importlib
 import certbot.main
 import configobj
 
@@ -118,6 +118,16 @@ class Config:
         """The Amazon SNS topic Amazon Resource Name (ARN) to which the updater reports events."""
         return os.environ.get('UPDATER_NOTIFICATION', '')
 
+def cfn_response(url: str, body: object) -> None:
+    """cfn_response sends the response to CloudFormation"""
+    data = json.dumps(body).encode()
+    headers = {
+        'content-type': 'application/json',
+        'content-length': str(len(data)),
+    }
+    req = urllib.request.Request(url, method='PUT', data=data, headers=headers)
+    with urllib.request.urlopen(req) as res:
+        res.read()  # skip the body
 
 def certonly(config) -> None:
     """get new certificate"""
@@ -457,7 +467,52 @@ def needs_init(config) -> bool:
 def lambda_handler(event, context): # pylint: disable=unused-argument
     """entry point of AWS Lambda"""
 
-    config = Config(event)
+    if event in "RequestType":
+        # it looks like a request from AWS Lambda-backed custom resources
+        handle_cfn_custom_resource(event)
+    else:
+        config = Config(event)
+        handle_event(config)
+
+    return {}
+
+def handle_cfn_custom_resource(event: object) -> None:
+    """handles requests from AWS Lambda-backed custom resources"""
+    properties = event['ResourceProperties']
+    config = Config(properties)
+    resourceId = properties['domains']
+    ret = {
+        'Status': 'SUCCESS',
+        'StackId': event['StackId'],
+        'RequestId': event['RequestId'],
+        'LogicalResourceId': event['LogicalResourceId'],
+        'Data': {},
+        'PhysicalResourceId': resourceId,
+    }
+
+    if event['RequestType'] == 'Delete':
+        cfn_response(event['ResponseURL'], ret)
+
+    try:
+        if needs_init(config):
+            try:
+                logger.debug('update the certificate.')
+                certonly(config)
+            except:
+                logger.debug('updating failed. fall back to request new certificate.')
+                renew(config)
+        else:
+            logger.debug('request new certificate.')
+            renew(config)
+        cfn_response(event['ResponseURL'], ret)
+    except:
+        notify_failed(config, traceback.format_exc())
+        ret['Status'] = 'FAILED'
+        cfn_response(event['ResponseURL'], ret)
+        raise
+
+def handle_event(config: Config) -> None:
+    """handles Amazon EventBridge events"""
     if len(config.domains) == 0:
         # nothing to do
         return {}
@@ -476,8 +531,6 @@ def lambda_handler(event, context): # pylint: disable=unused-argument
     except:
         notify_failed(config, traceback.format_exc())
         raise
-
-    return {}
 
 if __name__ == "__main__":
     lambda_handler({}, None)

@@ -132,7 +132,8 @@ Resources:
     Type: Custom::Certificate
     Properties:
       ServiceToken: !GetAtt AcmeCertUpdater.Arn
-      Input: !Sub '{"domains":"${Domains}","cert_name":"${CertName}"}'
+      domains: !Ref Domains
+      cert_name: !Ref CertName
 
 Outputs:
   Arn:
