@@ -464,10 +464,10 @@ def needs_init(config) -> bool:
         return True
     return False
 
-def lambda_handler(event, context): # pylint: disable=unused-argument
+def lambda_handler(event: object, context: object): # pylint: disable=unused-argument
     """entry point of AWS Lambda"""
 
-    if event in "RequestType":
+    if "RequestType" in event:
         # it looks like a request from AWS Lambda-backed custom resources
         handle_cfn_custom_resource(event)
     else:
