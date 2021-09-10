@@ -26,19 +26,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:0d576a1b1288825a8ecac62e4eec0c4f6679c117e05575e7e0f66eb2f010450d",
-                "sha256:a7d831c65e0216ca5f1b06dbb6d8441e8f3926a7a535677bd257fed481cd2f7a"
+                "sha256:0941cc8a0b2604b9d87fb32b90e79a9c5d0b50371647c0fb9e642444c0001d88",
+                "sha256:8a60e9f80d94c191c10ebb36caa7c7732f29890d712ac27e7c7dc17971ec24c9"
             ],
             "index": "pypi",
-            "version": "==1.18.38"
+            "version": "==1.18.39"
         },
         "botocore": {
             "hashes": [
-                "sha256:5171b7db1c3346dd687ac0a195f69538c05ee0c2c26510de2019d0a0949297bf",
-                "sha256:beefe7dee5020e1f7cda84685131533324742529d8a5686ce959047e1b3e3928"
+                "sha256:7289a7cc8450914860e7fb375a461a754a4d9b9c8a6ed42552afd6b99b14b394",
+                "sha256:7df81e52b74ec5a3f5eab210bdc4a537994225783e8d8ccaa136028c8518f244"
             ],
             "index": "pypi",
-            "version": "==1.21.38"
+            "version": "==1.21.39"
         },
         "certbot": {
             "hashes": [
@@ -184,11 +184,11 @@
         },
         "josepy": {
             "hashes": [
-                "sha256:6d632fcdaf0bed09e33f81f13b10575d4f0b7c37319350b725454e04a41e6a49",
-                "sha256:a5a182eb499665d99e7ec54bb3fe389f9cbc483d429c9651f20384ba29564269"
+                "sha256:49798be66a467e7c81f071fe5ff03ac5e37c6d7081933612259028496bb05a68",
+                "sha256:51cce8d97ced0556aae0ce3161b26d5f0f54bc42c749d3c606edc6d97d9802dc"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.8.0"
+            "version": "==1.9.0"
         },
         "parsedatetime": {
             "hashes": [
