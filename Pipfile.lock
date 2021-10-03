@@ -123,11 +123,11 @@
         },
         "configargparse": {
             "hashes": [
-                "sha256:c39540eb4843883d526beeed912dc80c92481b0c13c9787c91e614a624de3666",
-                "sha256:f75b235a13dba6692ee9e019470e7bce41861d09606c39c41facb347c24ca3cf"
+                "sha256:18f6535a2db9f6e02bd5626cc7455eac3e96b9ab3d969d366f9aafd5c5c00fe7",
+                "sha256:1b0b3cbf664ab59dada57123c81eff3d9737e0d11d8cf79e3d6eb10823f1739f"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
-            "version": "==1.5.2"
+            "version": "==1.5.3"
         },
         "configobj": {
             "hashes": [
