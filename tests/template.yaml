@@ -32,6 +32,8 @@ Resources:
               AWS: arn:aws:iam::053160724612:root
             Action:
               - 'sts:TagSession'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly
       Policies:
         - PolicyName: sns
           PolicyDocument:
