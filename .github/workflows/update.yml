@@ -7,18 +7,19 @@ on:
 jobs:
   requirements:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+
     steps:
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
+      - id: generate
+        uses: shogo82148/actions-github-app-token@v0
 
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ steps.generate.outputs.token }}
 
       - uses: actions/setup-python@v2
         with:
@@ -40,7 +41,7 @@ jobs:
       - name: commit
         if: steps.update.outputs.result == '1'
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.generate.outputs.token }}
         run: |
           branch=update-requirements-$(date +"%Y-%m-%d-%H-%M-%S")
           git config --global user.name "Ichinose Shogo"
