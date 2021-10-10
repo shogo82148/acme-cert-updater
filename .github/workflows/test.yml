@@ -31,8 +31,16 @@ jobs:
           role-to-assume: arn:aws:iam::445285296882:role/acme-cert-updater-test-TestRole-SPRNY1U43M59
           role-session-tagging: true
 
+      - name: Login to ECR Public
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+
       - name: test
         run: |
           pipenv run make test
           pipenv run make validate
           pipenv run make build
+
+      - name: Logout from ECR Public
+        run: |
+          docker login public.ecr.aws
