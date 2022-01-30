@@ -40,17 +40,8 @@ jobs:
 
       - name: commit
         if: steps.update.outputs.result == '1'
-        env:
-          GITHUB_TOKEN: ${{ steps.generate.outputs.token }}
-        run: |
-          branch=update-requirements-$(date +"%Y-%m-%d-%H-%M-%S")
-          git config --global user.name "Ichinose Shogo"
-          git config --global user.email shogo82148@gmail.com
-          git switch -c "$branch"
-          mv updater/requirements_new.txt updater/requirements.txt
-          git add .
-          git commit -m "Update requirements.txt $(date +"%Y-%m-%d %H:%M:%S")"
-          git push -u origin $branch
-          curl -H "Authorization: token $GITHUB_TOKEN" \
-            -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "main", "head": $branch }')" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
+        uses: shogo82148/actions-commit-and-create-pr@v1
+        with:
+          github-token: ${{ steps.generate_token.outputs.token }}
+          head-branch-prefix: "auto-update/"
+          commit-message: "update dependencies"
