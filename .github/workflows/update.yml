@@ -13,13 +13,11 @@ jobs:
       pull-requests: write
 
     steps:
-      - id: generate
+      - id: generate_token
         uses: shogo82148/actions-github-app-token@v0
 
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          token: ${{ steps.generate.outputs.token }}
 
       - uses: actions/setup-python@v2
         with:
