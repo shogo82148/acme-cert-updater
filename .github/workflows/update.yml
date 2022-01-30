@@ -35,6 +35,7 @@ jobs:
           diff <(cat updater/requirements.txt | grep -v -E 'boto(3|core)') \
             <(cat updater/requirements_new.txt | grep -v -E 'boto(3|core)') && true
           echo "::set-output name=result::$?"
+          mv updater/requirements_new.txt updater/requirements.txt
 
       - name: commit
         if: steps.update.outputs.result == '1'
