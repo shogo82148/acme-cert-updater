@@ -13,13 +13,11 @@ jobs:
       pull-requests: write
 
     steps:
-      - id: generate
+      - id: generate_token
         uses: shogo82148/actions-github-app-token@v0
 
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          token: ${{ steps.generate.outputs.token }}
 
       - uses: actions/setup-python@v2
         with:
@@ -37,20 +35,12 @@ jobs:
           diff <(cat updater/requirements.txt | grep -v -E 'boto(3|core)') \
             <(cat updater/requirements_new.txt | grep -v -E 'boto(3|core)') && true
           echo "::set-output name=result::$?"
+          mv updater/requirements_new.txt updater/requirements.txt
 
       - name: commit
         if: steps.update.outputs.result == '1'
-        env:
-          GITHUB_TOKEN: ${{ steps.generate.outputs.token }}
-        run: |
-          branch=update-requirements-$(date +"%Y-%m-%d-%H-%M-%S")
-          git config --global user.name "Ichinose Shogo"
-          git config --global user.email shogo82148@gmail.com
-          git switch -c "$branch"
-          mv updater/requirements_new.txt updater/requirements.txt
-          git add .
-          git commit -m "Update requirements.txt $(date +"%Y-%m-%d %H:%M:%S")"
-          git push -u origin $branch
-          curl -H "Authorization: token $GITHUB_TOKEN" \
-            -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "main", "head": $branch }')" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
+        uses: shogo82148/actions-commit-and-create-pr@v1
+        with:
+          github-token: ${{ steps.generate_token.outputs.token }}
+          head-branch-prefix: "auto-update/"
+          commit-message: "update dependencies"
