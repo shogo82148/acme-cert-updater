@@ -26,19 +26,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:0122f8428a23efd29283c9ec92e7da1a8f35a69ddfd0635131cc5ca558723c4f",
-                "sha256:365156a9e55f08f2394e0bc84fc953f2a200f63adb08091c2ea06d7b025ea80b"
+                "sha256:a235c422239d1b468924b37faa95f5750c6abd43651fe7deb3976e10a331c991",
+                "sha256:b01d29305527fe8754a0c5847c0431ec677dca34069aaed9429ff178826ab366"
             ],
             "index": "pypi",
-            "version": "==1.21.10"
+            "version": "==1.21.17"
         },
         "botocore": {
             "hashes": [
-                "sha256:7429f6e54851d3f40fa9147ca1517f5f54101865ae4e79ba2095f580ff85333e",
-                "sha256:fc4bf1c71fabd84c35b7fb728268a6f9f491493e9ee7a5efb603425bfe8a0277"
+                "sha256:29212b4be640efc047665650fee474357e884725a3e2a9bc029bca46a6ef0853",
+                "sha256:e61b9e6d0d5e384f8135211f05fc05694571505390293d939a9688ac08d4f62a"
             ],
             "index": "pypi",
-            "version": "==1.24.10"
+            "version": "==1.24.17"
         },
         "certbot": {
             "hashes": [
@@ -193,11 +193,11 @@
         },
         "josepy": {
             "hashes": [
-                "sha256:267004a64f08c016cd54b7aaf7c323fa3ef3679fb62f4b086cd56448d0fecb25",
-                "sha256:5b1805df50d0be5b06fd892d7192fedbf0e5f5191473ccf002ba429a3eb55db8"
+                "sha256:6f64eb35186aaa1776b7a1768651b1c616cab7f9685f9660bffc6491074a5390",
+                "sha256:8931daf38f8a4c85274a0e8b7cb25addfd8d1f28f9fb8fbed053dd51aec75dc9"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.12.0"
+            "version": "==1.13.0"
         },
         "parsedatetime": {
             "hashes": [
@@ -639,7 +639,7 @@
                 "sha256:1a9462dcc3347a79b1f1c0271fbe79e844580bb598bafa1ed208b94da3cdcd42",
                 "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"
             ],
-            "markers": "python_version < '3.10'",
+            "markers": "python_version >= '3.6'",
             "version": "==4.1.1"
         },
         "wrapt": {
