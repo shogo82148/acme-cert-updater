@@ -1,15 +1,15 @@
 -i https://pypi.org/simple
-acme==1.26.0
-boto3==1.22.5
-botocore==1.25.5
-certbot==1.26.0
-certbot-dns-route53==1.26.0
+acme==1.27.0
+boto3==1.22.6
+botocore==1.25.6
+certbot==1.27.0
+certbot-dns-route53==1.27.0
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.12
 configargparse==1.5.3
 configobj==5.0.6
-cryptography==37.0.1
+cryptography==37.0.2
 distro==1.7.0
 idna==3.3
 jmespath==1.0.0
