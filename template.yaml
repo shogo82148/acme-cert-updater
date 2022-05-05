@@ -9,7 +9,7 @@ Metadata:
   AWS::ServerlessRepo::Application:
     Name: acme-cert-updater
     Description: update the certificate using ACME and Route 53
-    Author: Shogo Ichinose
+    Author: ICHINOSE Shogo
     SpdxLicenseId: MIT
     LicenseUrl: LICENSE
     ReadmeUrl: README.md
