@@ -325,11 +325,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:194b74f2c2d1800268fe2d857d99981e7c04d010de3099f04ee45ebec535e560",
-                "sha256:3bcaf6e27ad3b0f643ba0a48c5ab9eca930c3eb51df0e068f4826ab880c394ea"
+                "sha256:d73f8cd714a1a6691f5eb5abeeacbf313242b7aa2f5eba93776542c1aad90c6f",
+                "sha256:fe9a97f68b064a6ddd4bacfb0b4b93a4c65a556d97ce906255540439d0c35cef"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==64.0.3"
+            "version": "==65.0.0"
         },
         "six": {
             "hashes": [
@@ -641,11 +641,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:194b74f2c2d1800268fe2d857d99981e7c04d010de3099f04ee45ebec535e560",
-                "sha256:3bcaf6e27ad3b0f643ba0a48c5ab9eca930c3eb51df0e068f4826ab880c394ea"
+                "sha256:d73f8cd714a1a6691f5eb5abeeacbf313242b7aa2f5eba93776542c1aad90c6f",
+                "sha256:fe9a97f68b064a6ddd4bacfb0b4b93a4c65a556d97ce906255540439d0c35cef"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==64.0.3"
+            "version": "==65.0.0"
         },
         "tomli": {
             "hashes": [
@@ -668,7 +668,7 @@
                 "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02",
                 "sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6"
             ],
-            "markers": "python_version < '3.10'",
+            "markers": "python_version >= '3.7'",
             "version": "==4.3.0"
         },
         "wrapt": {
