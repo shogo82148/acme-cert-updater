@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -20,8 +20,9 @@ jobs:
           python-version: "3.9"
       - name: install dependencies
         run: |
-          brew install pipenv
-          pipenv install --dev
+          pip install --upgrade pip
+          pip install pipenv
+          pipenv update --dev
 
       - name: Configure AWS Credentials
         uses: fuller-inc/actions-aws-assume-role@v1
