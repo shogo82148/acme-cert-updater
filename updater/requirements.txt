@@ -1,9 +1,9 @@
 -i https://pypi.org/simple
-acme==1.30.0 ; python_version >= '3.7'
-boto3==1.24.84
-botocore==1.27.84
-certbot==1.30.0
-certbot-dns-route53==1.30.0
+acme==1.31.0 ; python_version >= '3.7'
+boto3==1.24.86
+botocore==1.27.86
+certbot==1.31.0
+certbot-dns-route53==1.31.0
 certifi==2022.9.24 ; python_version >= '3.6'
 cffi==1.15.1
 charset-normalizer==2.1.1 ; python_full_version >= '3.6.0'
