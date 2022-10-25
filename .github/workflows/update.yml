@@ -34,7 +34,7 @@ jobs:
           # boto3 and botocore are updated very often, so ignore them
           diff <(cat updater/requirements.txt | grep -v -E 'boto(3|core)') \
             <(cat updater/requirements_new.txt | grep -v -E 'boto(3|core)') && true
-          echo "::set-output name=result::$?"
+          echo "result=$?" >> "$GITHUB_OUTPUT"
           mv updater/requirements_new.txt updater/requirements.txt
 
       - name: commit
