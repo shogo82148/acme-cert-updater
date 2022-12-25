@@ -13,8 +13,8 @@ boto3 = "*"
 botocore = "*"
 
 configobj = "*"
-certbot = "~=1.0"
-certbot-dns-route53 = "~=1.0"
+certbot = "*"
+certbot-dns-route53 = "*"
 pyyaml = ">=4.2b1"
 
 [requires]
