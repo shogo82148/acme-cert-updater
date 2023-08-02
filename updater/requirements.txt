@@ -1,7 +1,7 @@
 -i https://pypi.org/simple
 acme==2.6.0; python_version >= '3.7'
-boto3==1.28.9
-botocore==1.31.9
+boto3==1.28.17
+botocore==1.31.17
 certbot==2.6.0
 certbot-dns-route53==2.6.0
 certifi==2023.7.22; python_version >= '3.6'
@@ -9,7 +9,7 @@ cffi==1.15.1
 charset-normalizer==3.2.0; python_full_version >= '3.7.0'
 configargparse==1.7; python_version >= '3.5'
 configobj==5.0.8
-cryptography==41.0.2; python_version >= '3.7'
+cryptography==41.0.3; python_version >= '3.7'
 distro==1.8.0; python_version >= '3.6'
 idna==3.4; python_version >= '3.5'
 jmespath==1.0.1; python_version >= '3.7'
