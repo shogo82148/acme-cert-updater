@@ -15,7 +15,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ["acme", "letsencrypt"]
     HomePageUrl: https://github.com/shogo82148/acme-cert-updater
-    SemanticVersion: 1.11.0
+    SemanticVersion: 1.11.1
     SourceCodeUrl: https://github.com/shogo82148/acme-cert-updater
 
 Parameters:
@@ -75,7 +75,7 @@ Conditions:
   # > and must be between 1 and 256 characters long.
   IsNotificationArn: !Not
     - !Equals
-      - !Join [ "", !Split [ "arn:", !Ref Notification ] ] # remove "arn:" in Notification
+      - !Join ["", !Split ["arn:", !Ref Notification]] # remove "arn:" in Notification
       - !Ref Notification
 
   HasNotification: !Not [!Equals [!Ref Notification, ""]]
