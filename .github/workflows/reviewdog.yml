@@ -10,4 +10,4 @@ jobs:
         with:
           reporter: github-pr-review
           level: warning
-          args: "**/*.yaml"
+          cfn_lint_args: "**/*.yaml"
