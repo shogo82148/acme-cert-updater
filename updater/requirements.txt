@@ -1,10 +1,10 @@
 -i https://pypi.org/simple
 acme==3.0.1; python_version >= '3.8'
-boto3==1.35.76; python_version >= '3.8'
-botocore==1.35.76; python_version >= '3.8'
+boto3==1.35.81; python_version >= '3.8'
+botocore==1.35.81; python_version >= '3.8'
 certbot==3.0.1; python_version >= '3.8'
 certbot-dns-route53==3.0.1; python_version >= '3.8'
-certifi==2024.8.30; python_version >= '3.6'
+certifi==2024.12.14; python_version >= '3.6'
 cffi==1.17.1; python_version >= '3.8'
 charset-normalizer==3.4.0; python_full_version >= '3.7.0'
 configargparse==1.7; python_version >= '3.5'
