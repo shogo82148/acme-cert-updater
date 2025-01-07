@@ -1,7 +1,7 @@
 -i https://pypi.org/simple
 acme==3.0.1; python_version >= '3.8'
-boto3==1.35.87; python_version >= '3.8'
-botocore==1.35.87; python_version >= '3.8'
+boto3==1.35.93; python_version >= '3.8'
+botocore==1.35.93; python_version >= '3.8'
 certbot==3.0.1; python_version >= '3.8'
 certbot-dns-route53==3.0.1; python_version >= '3.8'
 certifi==2024.12.14; python_version >= '3.6'
@@ -23,6 +23,6 @@ pytz==2024.2
 pyyaml==6.0.2; python_version >= '3.8'
 requests==2.32.3; python_version >= '3.8'
 s3transfer==0.10.4; python_version >= '3.8'
-setuptools==75.6.0; python_version >= '3.9'
+setuptools==75.7.0; python_version >= '3.9'
 six==1.17.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'
 urllib3==2.3.0; python_version >= '3.9'
