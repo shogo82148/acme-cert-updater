@@ -26,21 +26,21 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:258ab77225a81d3cf3029c9afe9920cd9dec317689dfadec6f6f0a23130bb60a",
-                "sha256:eb21380d73fec6645439c0d802210f72a0cdb3295b02953f246ff53f512faa8f"
+                "sha256:9f8f699e75ec63fcc98c4dd7290997c7c06c68d3ac8161ad4735fe71f5fe945c",
+                "sha256:eeceeb74ef8b65634d358c27aa074917f4449dc828f79301f1075232618eb502"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==1.36.1"
+            "version": "==1.36.4"
         },
         "botocore": {
             "hashes": [
-                "sha256:dec513b4eb8a847d79bbefdcdd07040ed9d44c20b0001136f0890a03d595705a",
-                "sha256:f789a6f272b5b3d8f8756495019785e33868e5e00dd9662a3ee7959ac939bb12"
+                "sha256:3f183aa7bb0c1ba02171143a05f28a4438abdf89dd6b8c0a7727040375a90520",
+                "sha256:ef54f5e3316040b6ff775941e6ed052c3230dda0079d17d9f9e3c757375f2027"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==1.36.1"
+            "version": "==1.36.4"
         },
         "certbot": {
             "hashes": [
@@ -315,11 +315,11 @@
         },
         "josepy": {
             "hashes": [
-                "sha256:308b3bf9ce825ad4d4bba76372cf19b5dc1c2ce96a9d298f9642975e64bd13dd",
-                "sha256:d2b36a30f316269f3242f4c2e45e15890784178af5ec54fa3e49cf9234ee22e0"
+                "sha256:46c9b13d1a5104ffbfa5853e555805c915dcde71c2cd91ce5386e84211281223",
+                "sha256:878c08cedd0a892c98c6d1a90b3cb869736f9c751f68ec8901e7b05a0c040fed"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4.0'",
-            "version": "==1.14.0"
+            "markers": "python_version >= '3.8' and python_version < '4.0'",
+            "version": "==1.15.0"
         },
         "parsedatetime": {
             "hashes": [
