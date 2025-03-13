@@ -15,7 +15,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ["acme", "letsencrypt"]
     HomePageUrl: https://github.com/shogo82148/acme-cert-updater
-    SemanticVersion: 1.17.0
+    SemanticVersion: 1.18.0
     SourceCodeUrl: https://github.com/shogo82148/acme-cert-updater
 
 Parameters:
