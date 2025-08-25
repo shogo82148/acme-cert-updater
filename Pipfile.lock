@@ -26,21 +26,21 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:ab5798a03582d09c0de132d080c9aee53d5647b6461261a5b7621170ec80d92b",
-                "sha256:d1d9998fc2b9619fc796c859d263ac81793d783e79331be62931b353dd1b68b9"
+                "sha256:4b7fbd2b469d5fa6325f0e90310b2d430c9a35e8a984a9919103e6d248422537",
+                "sha256:667bc3a9bd1f26579957d95a2612359103c343dd74d44f202d09a155ed4189c6"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.14"
+            "version": "==1.40.16"
         },
         "botocore": {
             "hashes": [
-                "sha256:06c852be83543c8d45e18a530abcad31659db8b16bcb66fd371c930d38017e7c",
-                "sha256:1810494c8c4190f20f9e17f2da4f7ee91eda863f429c6d690ea17ec41a8f83c4"
+                "sha256:0296a245cb349431279d825522ae70270edf8d8be7b91108fdcc086ea347c0b6",
+                "sha256:522a8b7e3837667aca978b5b2dd2d12c3834f58f13df3c8d3369070d883d608d"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.14"
+            "version": "==1.40.16"
         },
         "certbot": {
             "hashes": [
@@ -343,10 +343,11 @@
         },
         "pyrfc3339": {
             "hashes": [
-                "sha256:30b70a366acac3df7386b558c21af871522560ed7f3f73cf344b8c2cbb8b0c9d",
-                "sha256:e47843379ea35c1296c3b6c67a948a1a490ae0584edfcbdea0eaffb5dd29960b"
+                "sha256:560f3f972e339f579513fe1396974352fd575ef27caff160a38b312252fcddf3",
+                "sha256:c569a9714faf115cdb20b51e830e798c1f4de8dabb07f6ff25d221b5d09d8d7f"
             ],
-            "version": "==2.0.1"
+            "markers": "python_version >= '3.9'",
+            "version": "==2.1.0"
         },
         "python-dateutil": {
             "hashes": [
