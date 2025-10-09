@@ -18,47 +18,46 @@
     "default": {
         "acme": {
             "hashes": [
-                "sha256:b701b23e66d3c58352896a72caa13523d9f72b183a0ba1cde93e6713a450a391",
-                "sha256:b7923d1105f3df7f0c94bab90fc3006e9a0de0597baf82dedfc8ed24889f56dc"
+                "sha256:7b97820857d9baffed98bca50ab82bb6a636e447865d7a013a7bdd7972f03cda",
+                "sha256:80e9c315d82302bb97279f4516ff31230d29195ab9d4a6c9411ceec20481b61e"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==5.0.0"
+            "version": "==5.1.0"
         },
         "boto3": {
             "hashes": [
-                "sha256:5b145752d20f29908e3cb8c823bee31c77e6bcf18787e570f36bbc545cc779ed",
-                "sha256:e8d794dc1f01729d93dc188c90cf63cd0d32df8818a82ac46e641f6ffcea615e"
+                "sha256:8a5fb8b5509cd5ddaf3d1d1f0385c974038b47492ca25f3414042676d188f635"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.45"
+            "version": "==1.40.48"
         },
         "botocore": {
             "hashes": [
-                "sha256:9abf473d8372ade8442c0d4634a9decb89c854d7862ffd5500574eb63ab8f240",
-                "sha256:cf8b743527a2a7e108702d24d2f617e93c6dc7ae5eb09aadbe866f15481059df"
+                "sha256:18bed348ce707aa896065b424f36a0b8d542fa6810e9165618e105b1abf34e7e",
+                "sha256:34795305bb5aa670befcbdc936fd144a0af5db5323d78e7245dbd6aa246bf3db"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.45"
+            "version": "==1.40.48"
         },
         "certbot": {
             "hashes": [
-                "sha256:4e9e4680e812037b582cef7335570074390b455d24a3e09bcaa2fdc473dbcc0a",
-                "sha256:6dd86a9a4f3890b02ff90f6b3d5063b80577082d1e067b6c55aa77399eb1f428"
+                "sha256:9f1aa341af342c676cd356ca082a8fa15bb1edcbb7ced09a975224427e5ec9c6",
+                "sha256:d652a598f67af78ecf122860e85cd2e9c19a2bbe79a71775eccf6e8d642a4fca"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==5.0.0"
+            "version": "==5.1.0"
         },
         "certbot-dns-route53": {
             "hashes": [
-                "sha256:b89653b7410f783f945cd83206fa9ffbe87fa3c4b491e12fb921c239e39b1bfa",
-                "sha256:df380f9ff37c438c1daa6fac126f5a3e89b908cc76af3cb86c1bb5f02c5eca7f"
+                "sha256:5d325c702077bc483717f2f989b6014b258032b28009b8ed9062f9c01d693282",
+                "sha256:64c0594b28cc8544559f5981cd3ea514c09f0911c54d045363573d2146247eba"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==5.0.0"
+            "version": "==5.1.0"
         },
         "certifi": {
             "hashes": [
@@ -624,11 +623,11 @@
         },
         "platformdirs": {
             "hashes": [
-                "sha256:abd01743f24e5287cd7a5db3752faf1a2d65353f38ec26d98e25a6db65958c85",
-                "sha256:ca753cf4d81dc309bc67b0ea38fd15dc97bc30ce419a7f58d13eb3bf14c4febf"
+                "sha256:70ddccdd7c99fc5942e9fc25636a8b34d04c24b335100223152c2803e4063312",
+                "sha256:e578a81bb873cbb89a41fcc904c7ef523cc18284b7e3b3ccf06aca1403b7ebd3"
             ],
-            "markers": "python_version >= '3.9'",
-            "version": "==4.4.0"
+            "markers": "python_version >= '3.10'",
+            "version": "==4.5.0"
         },
         "pluggy": {
             "hashes": [
@@ -648,12 +647,12 @@
         },
         "pylint": {
             "hashes": [
-                "sha256:26698de19941363037e2937d3db9ed94fb3303fdadf7d98847875345a8bb6b05",
-                "sha256:7ef94aa692a600e82fabdd17102b73fc226758218c97473c7ad67bd4cb905d83"
+                "sha256:01f9b0462c7730f94786c283f3e52a1fbdf0494bbe0971a78d7277ef46a751e7",
+                "sha256:d312737d7b25ccf6b01cc4ac629b5dcd14a0fcf3ec392735ac70f137a9d5f83a"
             ],
             "index": "pypi",
             "markers": "python_full_version >= '3.9.0'",
-            "version": "==3.3.8"
+            "version": "==3.3.9"
         },
         "pytest": {
             "hashes": [
