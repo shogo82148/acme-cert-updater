@@ -86,7 +86,7 @@ Resources:
     Properties:
       CodeUri: updater/
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.13
       Environment:
         Variables:
           UPDATER_EMAIL: !Ref Email
