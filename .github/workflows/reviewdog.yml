@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: shogo82148/actions-cfn-lint@v1
+      - uses: shogo82148/actions-cfn-lint@v4
         with:
           reporter: github-pr-review
           level: warning
