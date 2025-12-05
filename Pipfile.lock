@@ -18,47 +18,47 @@
     "default": {
         "acme": {
             "hashes": [
-                "sha256:7b97820857d9baffed98bca50ab82bb6a636e447865d7a013a7bdd7972f03cda",
-                "sha256:80e9c315d82302bb97279f4516ff31230d29195ab9d4a6c9411ceec20481b61e"
+                "sha256:3d71d442a02112fbcf58e4760e8b7b409d37586dccaa76416251a774facd7845",
+                "sha256:5f905542b85a75a767dfb540ccfa78b9c758c6619338651755347ca7dd22a1fd"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==5.1.0"
+            "version": "==5.2.1"
         },
         "boto3": {
             "hashes": [
-                "sha256:9c67729a6112b7dced521ea70b0369fba138e89852b029a7876041cd1460c084",
-                "sha256:af32b7f61dd6293cad728ec205bcb3611ab1bf7b7dbccfd0f2bd7b9c9af96039"
+                "sha256:163df55a774402fa940e95a152c308a33fb0f49cbcb5ec1725936e48635512f7",
+                "sha256:f7fe002c39806d5efe9105f0d74e836f001230e9520b4502c752dd4951f60041"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.42.0"
+            "version": "==1.42.3"
         },
         "botocore": {
             "hashes": [
-                "sha256:08fe47e9b306f4436f5eaf6a02cb6d55c7745d13d2d093ce5d917d3ef3d3df75",
-                "sha256:963cc946e885acb941c96e7d343cb6507b479812ca22566ceb3e9410d0588de0"
+                "sha256:6bad2e512ab85926bbfb391a9486bb3120f4be71419e2f70b556d99783dcb1ce",
+                "sha256:fa174f53224ab2adc3a01bb3215b41d314df2f6578381a4a0051bd60d5c718d9"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.41.6"
+            "version": "==1.42.3"
         },
         "certbot": {
             "hashes": [
-                "sha256:9f1aa341af342c676cd356ca082a8fa15bb1edcbb7ced09a975224427e5ec9c6",
-                "sha256:d652a598f67af78ecf122860e85cd2e9c19a2bbe79a71775eccf6e8d642a4fca"
+                "sha256:5faed67634a3f8a62782655b5f739161804fc9999577b263ea7dd76eba62f406",
+                "sha256:fb494826590904dd2eb0883b83822d0437a3449bd45af87254489d0a9c8a2f67"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==5.1.0"
+            "version": "==5.2.1"
         },
         "certbot-dns-route53": {
             "hashes": [
-                "sha256:5d325c702077bc483717f2f989b6014b258032b28009b8ed9062f9c01d693282",
-                "sha256:64c0594b28cc8544559f5981cd3ea514c09f0911c54d045363573d2146247eba"
+                "sha256:37536fb5ac544f7339454a61922ff294f56bcce1a9533b4d63907f75d4e74019",
+                "sha256:68483a5302328ae5064c6b724f0e54ea3e8af3e8a6be294b8757d362b837a3ce"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==5.1.0"
+            "version": "==5.2.1"
         },
         "certifi": {
             "hashes": [
