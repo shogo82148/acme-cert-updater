@@ -17,7 +17,7 @@ jobs:
         uses: shogo82148/actions-github-app-token@v1
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - uses: actions/setup-python@v4
         with:
