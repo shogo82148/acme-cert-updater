@@ -29,7 +29,7 @@ jobs:
           pipenv update --dev
 
       - name: Configure AWS Credentials
-        uses: fuller-inc/actions-aws-assume-role@c6cc1f39a57c0228a4b542ae2b3d49d3e56ce85a # v1.9.1
+        uses: fuller-inc/actions-aws-assume-role@db10fc9ddce76ac14ce9182c2433f497580bec93 # v1.9.2
         with:
           aws-region: ap-northeast-1
           role-to-assume: arn:aws:iam::445285296882:role/acme-cert-updater-test-TestRole-SPRNY1U43M59
