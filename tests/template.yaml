@@ -27,7 +27,7 @@ Resources:
               StringEquals:
                 "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
               StringLike:
-                "token.actions.githubusercontent.com:sub": "repo:shogo82148@1157344/acme-cert-updater@168665807:*"
+                "token.actions.githubusercontent.com:sub": "repo:shogo82148@1157344/acme-cert-updater@168665807:ref:refs/heads/*"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly
       Policies:
