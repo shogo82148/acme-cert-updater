@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - id: generate_token
-        uses: shogo82148/actions-github-app-token@bbdb11feaf1f848a9e8f84cb1d10a8b97e4d9f5b # v1.3.3
+        uses: shogo82148/actions-github-app-token@bf955a861ff7c9d64c86b567bac12d7baae5614a # v1.3.4
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
