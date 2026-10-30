@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - id: generate_token
-        uses: shogo82148/actions-github-app-token@bf955a861ff7c9d64c86b567bac12d7baae5614a # v1.3.4
+        uses: shogo82148/actions-github-app-token@v1.3.4
 
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.14"
 
@@ -39,7 +39,7 @@ jobs:
 
       - name: commit
         if: steps.update.outputs.result == '1'
-        uses: shogo82148/actions-commit-and-create-pr@b1322fe9da4037e9720e34ea221997cffcd3498d # v1.1.4
+        uses: shogo82148/actions-commit-and-create-pr@v1.1.4
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           head-branch-prefix: "auto-update/"
