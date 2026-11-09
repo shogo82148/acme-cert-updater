@@ -8,7 +8,7 @@ workflows:
         - 'github/codeql-action@v4.39.2'
     '.github/workflows/reviewdog.yml':
         - 'actions/checkout@v7.0.1'
-        - 'shogo82148/actions-cfn-lint@v4.84.0'
+        - 'shogo82148/actions-cfn-lint@v4.85.0'
     '.github/workflows/test.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.1.0'
@@ -39,9 +39,9 @@ dependencies:
         commit: 'sha1-1fc58d04a4d4374f921bdac573c3811c240f9c26'
         owner_id: 9919
         repo_id: 259445878
-    'shogo82148/actions-cfn-lint@v4.84.0':
-        ref: 'v4.84.0'
-        commit: 'sha1-159c183f7c327f22a401a78df562499227f267b1'
+    'shogo82148/actions-cfn-lint@v4.85.0':
+        ref: 'v4.85.0'
+        commit: 'sha1-8f60e818dbbd550c72912fe25452f330e2a4429d'
         owner_id: 1157344
         repo_id: 224426632
     'shogo82148/actions-commit-and-create-pr@v1.1.4':
